@@ -3,6 +3,8 @@ import "./Dashboard.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
+import ProfileBox from "./ProfileBox.jsx";
+
 import {
   Popover,
   PopoverContent,
@@ -14,8 +16,9 @@ import {
   Calendar as CalendarIcon,
 } from "lucide-react";
 import { format } from "date-fns";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell, faUser, faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import IntakePage from "./IntakePage.jsx";
 
 export default function Dashboard() {
   const [appointmentsData, setAppointmentsData] = useState([]);
@@ -23,30 +26,93 @@ export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [activeKey, setActiveKey] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showIntake, setShowIntake] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [pendingTimeouts, setPendingTimeouts] = useState({});
+const [showProfileBox, setShowProfileBox] = useState(false);
+
   const itemsPerPage = 4;
 
   useEffect(() => {
     fetch("/appointments.json")
       .then((res) => res.json())
-      .then((data) => setAppointmentsData(data))
+      .then((data) => {
+        const withStatus = data.map((item) => ({
+          ...item,
+          status: "Pending",
+          justCompleted: false,
+        }));
+        setAppointmentsData(withStatus);
+      })
       .catch((error) => console.error("Failed to fetch appointments:", error));
   }, []);
 
-  const filteredAppointments = appointmentsData.filter((item) => {
-    const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
+  const toggleStatusWithDelay = (itemName, currentStatus) => {
+    if (currentStatus === "Pending") {
+      setAppointmentsData((prevData) =>
+        prevData.map((appt) =>
+          appt.name === itemName
+            ? { ...appt, status: "Completed", justCompleted: true }
+            : appt
+        )
+      );
 
-    if (selectedDate) {
-      const itemDate = new Date(item.date);
-      const isSameDay = itemDate.toDateString() === selectedDate.toDateString();
-      const isSameMonth =
-        itemDate.getMonth() === selectedDate.getMonth() &&
-        itemDate.getFullYear() === selectedDate.getFullYear();
+      if (pendingTimeouts[itemName]) clearTimeout(pendingTimeouts[itemName]);
 
-      return matchesSearch && (isSameDay || isSameMonth);
+      const timeout = setTimeout(() => {
+        setAppointmentsData((prevData) =>
+          prevData.map((appt) =>
+            appt.name === itemName ? { ...appt, justCompleted: false } : appt
+          )
+        );
+        setPendingTimeouts((prev) => {
+          const updated = { ...prev };
+          delete updated[itemName];
+          return updated;
+        });
+      }, 3000);
+
+      setPendingTimeouts((prev) => ({ ...prev, [itemName]: timeout }));
+    } else {
+      if (pendingTimeouts[itemName]) clearTimeout(pendingTimeouts[itemName]);
+      setAppointmentsData((prevData) =>
+        prevData.map((appt) =>
+          appt.name === itemName
+            ? { ...appt, status: "Pending", justCompleted: false }
+            : appt
+        )
+      );
     }
+  };
 
-    return matchesSearch;
-  });
+ const handleRowClick = (e, itemName) => {
+  const isInsideButton = e.target.closest(".intake-btn, .status-text");
+  if (!isInsideButton) {
+    const patientData = appointmentsData.find((item) => item.name === itemName);
+    setSelectedPatient(patientData);
+    setShowProfileBox(true);
+  }
+};
+
+
+  const filteredAppointments = appointmentsData
+    .filter((item) => {
+      const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
+      if (selectedDate) {
+        const itemDate = new Date(item.date);
+        const isSameDay = itemDate.toDateString() === selectedDate.toDateString();
+        const isSameMonth =
+          itemDate.getMonth() === selectedDate.getMonth() &&
+          itemDate.getFullYear() === selectedDate.getFullYear();
+        return matchesSearch && (isSameDay || isSameMonth);
+      }
+      return matchesSearch;
+    })
+    .sort((a, b) => {
+      if (a.justCompleted && !b.justCompleted) return -1;
+      if (!a.justCompleted && b.justCompleted) return 1;
+      return a.status === "Completed" ? 1 : -1;
+    });
 
   const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
   const paginatedAppointments = filteredAppointments.slice(
@@ -82,6 +148,7 @@ export default function Dashboard() {
             <div className="profile-info">
               <div className="profile-name">Dr. Sarah</div>
               <div className="profile-role">Cardiologist</div>
+              <FontAwesomeIcon icon={faAngleDown} className="vectorlogo" />
             </div>
           </div>
 
@@ -94,9 +161,7 @@ export default function Dashboard() {
                   className="reminder-avatar"
                 />
                 <div className="reminder-info">
-                  <div className="reminder-name">
-                    {paginatedAppointments[0].name}
-                  </div>
+                  <div className="reminder-name">{paginatedAppointments[0].name}</div>
                   <div className="reminder-meta">
                     {paginatedAppointments[0].age} Yrs&nbsp; Male
                   </div>
@@ -105,15 +170,11 @@ export default function Dashboard() {
                   <FontAwesomeIcon icon={faBell} style={{ color: "#FFD43B", fontSize: "30px" }} />
                 </div>
               </div>
-
               <div className="reminder-datetime-box">
                 <CalendarDays className="reminder-calendar-icon" />
                 <span>
-                  {format(
-                    new Date(paginatedAppointments[0].date),
-                    "dd MMMM yyyy"
-                  )}
-                  , {paginatedAppointments[0].time}
+                  {format(new Date(paginatedAppointments[0].date), "dd MMMM yyyy")},{" "}
+                  {paginatedAppointments[0].time}
                 </span>
               </div>
             </div>
@@ -154,7 +215,6 @@ export default function Dashboard() {
             </PopoverTrigger>
             <PopoverContent className="popover-content w-auto p-3 space-y-2" align="start">
               <Calendar
-                className="calendar1"
                 mode="single"
                 selected={selectedDate}
                 onSelect={(date) => {
@@ -166,6 +226,7 @@ export default function Dashboard() {
                   setCurrentPage(1);
                 }}
                 initialFocus
+                className="border rounded-md shadow-lg p-4"
               />
               <div>
                 <Button
@@ -191,39 +252,63 @@ export default function Dashboard() {
           <div className="cell date">Date</div>
           <div className="cell patient">Patient</div>
           <div className="cell age">Age</div>
-          <div className="cell blood">Blood Group</div>
           <div className="cell disease">Disease</div>
+         
           <div className="cell action">Action</div>
+           <div className="cell status">Status</div>
         </div>
 
         {paginatedAppointments.map((item) => (
           <div
             key={item.name}
             className={`appointment-row ${activeKey === item.name ? "active" : ""}`}
-            onClick={() => setActiveKey(item.name)}
+            onClick={(e) => handleRowClick(e, item.name)}
           >
             <div className="cell time">{item.time}</div>
             <div className="cell date">{item.date}</div>
             <div className="cell patient">
-              <img src={item.image} alt={item.name} className="avatar" />
+              {item.image ? (
+                <img src={item.image} alt={item.name} className="avatar" />
+              ) : (
+                <FontAwesomeIcon icon={faUser} className="avatar default-avatar" />
+              )}
               <span>{item.name}</span>
             </div>
             <div className="cell age">{item.age}</div>
-            <div className="cell blood">{item.blood}</div>
             <div className="cell disease">{item.disease}</div>
+          
             <div className="cell action">
-              <Button className="intake-btn">Intake</Button>
+              <button
+                className="intake-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPatient(item);
+                  setShowIntake(true);
+                }}
+              >
+                Intake
+              </button>
+            </div>
+              <div
+              className="cell status status-text"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleStatusWithDelay(item.name, item.status);
+              }}
+              style={{
+                cursor: "pointer",
+                color: item.status === "Completed" ? "#4781FF" : "black",
+                fontWeight: 500,
+              }}
+            >
+              {item.status}
             </div>
           </div>
         ))}
       </div>
 
       <div className="pagination">
-        <button
-          className="page-btn"
-          onClick={handlePrevious}
-          disabled={currentPage === 1}
-        >
+        <button className="page-btn" onClick={handlePrevious} disabled={currentPage === 1}>
           Previous
         </button>
         <div className="pages">
@@ -237,14 +322,24 @@ export default function Dashboard() {
             </button>
           ))}
         </div>
-        <button
-          className="page-btn"
-          onClick={handleNext}
-          disabled={currentPage === totalPages}
-        >
+        <button className="page-btn" onClick={handleNext} disabled={currentPage === totalPages}>
           Next
         </button>
       </div>
+
+      {showIntake && (
+        <IntakePage onClose={() => setShowIntake(false)} patient={selectedPatient} />
+      )}
+     {showProfileBox && selectedPatient && (
+  <ProfileBox
+    patient={selectedPatient}
+    onClose={() => {
+      setShowProfileBox(false);
+      setSelectedPatient(null);
+    }}
+  />
+)}
+ 
     </>
   );
 }

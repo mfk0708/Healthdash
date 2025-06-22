@@ -1,0 +1,164 @@
+.beta-version-container {
+  text-align: center;
+  padding: 1rem;
+  font-family: 'Arial', sans-serif;
+}
+
+
+.doctor-header {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  justify-content: flex-start;
+   align-items: center;
+  padding-left: 1rem;
+}
+
+.doctor-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+
+}
+
+.doctor-name {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.voice-card {
+  border: 1.5px solid #808080;
+  border-radius: 12px;
+  padding: 1rem;
+  background-color: #ffffff;
+  width: 68%;
+  height: 350px;
+  margin: 0 auto 1rem;
+}
+.mic-box {
+  border: 1px solid #808080;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  background-color:#f1f1f1;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin: 2rem;
+  height: 65%;
+}
+
+.mic-box:hover {
+  background-color: #f1f1f1;
+}
+
+
+
+
+.mic-icon {
+  font-size: 2.5rem;
+  color: #4950d0;
+  margin-top: 20px;
+  margin-bottom:15px;
+ border: 1px solid #b3c8e4;
+ background-color: #aecffa;
+ padding: 0.5rem 0.75rem;
+ border-radius: 50%;
+ 
+}
+.recording-text-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.4rem;
+}
+
+.recording-text {
+  color: #808080;
+  font-size: 1rem;
+  margin-left: 20px;
+}
+
+.speakericon {
+  color: #808080;
+  margin-left: auto;
+  animation: pulse 1s infinite;
+  margin-right: 20px;
+  font-size: 1.2rem;
+}
+
+
+@keyframes pulse {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+.mic-textarea {
+  width: 100%;
+  min-height: 2rem;
+  resize: none;
+  font-size: 1rem;
+  font-family: inherit;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  overflow-y: hidden;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  padding: 0.5rem 0;
+  color: #333;
+   text-align: center; 
+}
+
+
+.btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin: 3rem;
+
+  
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: 0.4rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  
+}
+
+.cancel-btn {
+  background-color: "white";
+  color: #333;
+  border: 1px solid #b3c8e4;
+}
+
+.submit-btn {
+  background-color: #1b5734;
+  color: white;
+}
+
+.rating-container {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center; /* vertically center paragraph and stars */
+  gap: 1rem;   
+   font-size: 1.2rem;
+   font-weight: 400;
+   justify-content: center;
+}
+
+.star-rating {
+  font-size: 1.5rem;
+  color: #ccc;
+  cursor: pointer;
+  display: flex;
+  gap:0.5rem;
+}
+
+.star-rating .star.filled {
+  color: #f8b400;
+}

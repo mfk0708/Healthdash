@@ -5,7 +5,8 @@
 
 .dashboard {
   display: flex;
-  height: 100vh;
+  height: 100vh; /* Full screen height */
+  overflow: hidden;
 }
 
 .logo {
@@ -62,8 +63,8 @@
   flex: 1;
   padding: 1rem 2rem 2rem 2rem;
   background: #FCFCF9;
-  margin-left: 3%;
-  z-index: 0;
+ 
+  overflow-y: auto;
 }
 .sidebar {
   width: 20%;
@@ -76,4 +77,8 @@
   border-bottom-right-radius: 2rem;
   box-shadow: 8px 0 24px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease-in-out;
+   position: sticky;
+  top: 0;
+  overflow-y: auto;
+   
 }

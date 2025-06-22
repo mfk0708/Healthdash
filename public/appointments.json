@@ -1,47 +1,956 @@
 [
   {
-    "time": "10.00 am",
-    "date": "2025-06-05",
-    "name": "Arthur",
-    "age": 25,
-    "blood": "A +ve",
-    "disease": "Cancer",
-    "image": "https://i.pravatar.cc/150?img=1"
+    "id": 1,
+    "name": "Priya Mishra",
+    "gender": "Female",
+    "date": "2025-06-19",
+    "time": "11:00 AM",
+    "age": 64,
+    "blood": "A-",
+    "disease": "Hypertension",
+    "reason": "Body ache",
+    "doctor": "Dr. Arvind Menon",
+    "doctorImage": "https://randomuser.me/api/portraits/men/41.jpg",
+    "image": "https://randomuser.me/api/portraits/women/53.jpg",
+    "lastVisit": "2025-05-29",
+    "temperature": "99.1°F",
+    "bloodPressure": "135/83",
+    "pulse": "70 bpm",
+    "phone": "9328900493",
+    "address": "83 Tagore Road",
+    "city": "Kochi",
+    "pastAppointments": 8,
+    "upcomingAppointments": 2,
+    "medications": [
+      {
+        "name": "Levocetirizine",
+        "dosage": "376mg",
+        "frequency": "As needed",
+        "duration": "16 days",
+         "notes": "After food"
+      },
+      {
+        "name": "Pantoprazole",
+        "dosage": "540mg",
+        "frequency": "Once a day",
+        "duration": "18 days",
+        "notes": "Before food"
+      },
+      {
+        "name": "Levocetirizine",
+        "dosage": "198mg",
+        "frequency": "Once a day",
+        "duration": "12 days",
+        "notes": "Before food"
+      }
+    ],
+    "tests": [
+      {
+        "testName": "Blood Sugar",
+        "testDate": "2025-06-16",
+        "status": "Completed",
+        "result": "Requires follow-up"
+      
+      },
+      {
+        "testName": "Blood Sugar",
+        "testDate": "2025-06-18",
+        "status": "Completed",
+        "result": "Awaiting result"
+         
+      },
+      {
+        "testName": "Blood Sugar",
+        "testDate": "2025-06-17",
+        "status": "Completed",
+        "result": "Requires follow-up"
+        
+      }
+    ],
+    "visitHistory": [
+      {
+        "date": "2024-08-23",
+        "reason": "Skin irritation",
+        "speciality": "ENT",
+        "doctor": "Dr. Sunil Nair"
+         
+      },
+      {
+        "date": "2025-02-26",
+        "reason": "Skin irritation",
+        "speciality": "Orthopedics",
+        "doctor": "Dr. Anusha Reddy"
+        
+      },
+      {
+        "date": "2025-02-13",
+        "reason": "Follow-up",
+        "speciality": "Orthopedics",
+        "doctor": "Dr. Ajay Gupta"
+        
+      }
+    ]
   },
   {
-    "time": "11.00 am",
-    "date": "2025-06-05",
-    "name": "John",
-    "age": 40,
-    "blood": "AB +ve",
-    "disease": "Ulcer",
-    "image": "https://i.pravatar.cc/150?img=2"
-  },
-  {
-    "time": "12.00 pm",
-    "date": "2025-06-05",
-    "name": "Emma Watson",
-    "age": 30,
-    "blood": "A -ve",
+    "id": 2,
+    "name": "Rahul Desai",
+    "gender": "Male",
+    "date": "2025-06-18",
+    "time": "01:15 PM",
+    "age": 48,
+    "blood": "B+",
     "disease": "Diabetes",
-    "image": "https://i.pravatar.cc/150?img=3"
+    "reason": "Regular checkup",
+    "doctor": "Dr. Anusha Reddy",
+    "doctorImage": "https://randomuser.me/api/portraits/men/41.jpg",
+    "image": "https://randomuser.me/api/portraits/men/42.jpg",
+    "lastVisit": "2025-05-21",
+    "temperature": "98.2°F",
+    "bloodPressure": "132/81",
+    "pulse": "68 bpm",
+    "phone": "9398012345",
+    "address": "42 Gandhi Street",
+    "city": "Mumbai",
+    "pastAppointments": 6,
+    "upcomingAppointments": 1,
+    "medications": [
+      {
+        "name": "Metformin",
+        "dosage": "500mg",
+        "frequency": "Twice a day",
+        "duration": "30 days",
+        "notes": "Before food"
+      },
+      {
+        "name": "Pantoprazole",
+        "dosage": "300mg",
+        "frequency": "Once a day",
+        "duration": "15 days",
+        "notes": "Before food"
+      },
+      {
+        "name": "Calcium",
+        "dosage": "600mg",
+        "frequency": "Once a day",
+        "duration": "20 days",
+         "notes": "After food"
+      }
+    ],
+    "tests": [
+      {
+        "testName": "CBC",
+        "testDate": "2025-06-16",
+        "status": "Completed",
+        "result": "Normal"
+      },
+      {
+        "testName": "Liver Function Test",
+        "testDate": "2025-06-17",
+        "status": "Completed",
+        "result": "Slight variation"
+      },
+      {
+        "testName": "COVID-19 Antigen",
+        "testDate": "2025-06-18",
+        "status": "In Progress",
+        "result": "Awaiting result"
+      }
+    ],
+    "visitHistory": [
+      {
+        "date": "2024-10-11",
+        "reason": "Routine checkup",
+        "speciality": "General Medicine",
+        "doctor": "Dr. Rekha Singh"
+      },
+      {
+        "date": "2024-12-30",
+        "reason": "Follow-up",
+        "speciality": "General Medicine",
+        "doctor": "Dr. Arvind Menon"
+      },
+      {
+        "date": "2025-01-25",
+        "reason": "Joint pain",
+        "speciality": "Orthopedics",
+        "doctor": "Dr. Anusha Reddy"
+      }
+    ]
   },
-  {
-    "time": "01.30 pm",
-    "date": "2025-06-05",
-    "name": "Regina",
-    "age": 23,
-    "blood": "O +ve",
-    "disease": "Dysentry",
-    "image": "https://i.pravatar.cc/150?img=4"
-  },
-  {
-    "time": "03.00 pm",
-    "date": "2025-05-05",
-    "name": "Joseph",
-    "age": 49,
-    "blood": "AB -ve",
-    "disease": "Diabetes",
-    "image": "https://i.pravatar.cc/150?img=5"
-  }
+
+{
+  "id": 1,
+  "name": "Ravi Kumar",
+  "gender": "Male",
+  "date": "2025-06-15",
+  "time": "11:00 AM",
+  "age": 45,
+  "blood": "B+",
+  "disease": "Fever",
+  "reason": "High fever and body ache",
+  "doctor": "Dr. Sarah Johnson",
+  "doctorImage": "https://randomuser.me/api/portraits/women/44.jpg",
+  "image": "https://randomuser.me/api/portraits/men/45.jpg",
+  "lastVisit": "Apr 05, 2025",
+  "temperature": "98.6°F",
+  "bloodPressure": "120/80",
+  "pulse": "72 bpm",
+  "phone": "9876543210",
+  "address": "12 MG Road",
+  "city": "Bengaluru",
+  "pastAppointments": 5,
+  "upcomingAppointments": 1,
+  "medications": [
+    {
+      "name": "Paracetamol",
+      "dosage": "500mg",
+      "frequency": "Thrice a day",
+      "duration": "5 days",
+       "notes": "After food"
+    },
+    {
+      "name": "Ibuprofen",
+      "dosage": "400mg",
+      "frequency": "Twice a day",
+      "duration": "3 days",
+       "notes": "After food"
+    },
+    {
+      "name": "Vitamin C",
+      "dosage": "1000mg",
+      "frequency": "Once a day",
+      "duration": "7 days",
+       "notes": "After food"
+    }
+  ],
+  "tests": [
+    {
+      "testName": "CBC (Complete Blood Count)",
+      "testDate": "2025-06-14",
+      "status": "Completed",
+      "result": "WBC slightly elevated, suggestive of infection"
+    },
+    {
+      "testName": "Liver Function Test",
+      "testDate": "2025-06-14",
+      "status": "Completed",
+      "result": "All parameters normal"
+    },
+    {
+      "testName": "COVID-19 Antigen",
+      "testDate": "2025-06-15",
+      "status": "In Progress",
+      "result": "Awaiting result"
+    }
+  ],
+  "visitHistory": [
+    {
+      "date": "2025-03-12",
+      "reason": "Throat infection",
+      "speciality": "ENT"
+    },
+    {
+      "date": "2024-12-22",
+      "reason": "Routine checkup",
+      "speciality": "General Medicine"
+    },
+    {
+      "date": "2024-10-03",
+      "reason": "Skin rash",
+      "speciality": "Dermatology"
+    }
+  ]
+},
+
+{
+  "id": 3,
+  "name": "Neha Reddy",
+  "gender": "Female",
+  "date": "2025-06-15",
+  "time": "09:30 AM",
+  "age": 37,
+  "blood": "AB+",
+  "disease": "Migraine",
+  "reason": "Nausea",
+  "doctor": "Dr. Kavita Bansal",
+  "doctorImage": "https://randomuser.me/api/portraits/men/41.jpg",
+  "image": "https://randomuser.me/api/portraits/women/44.jpg",
+  "lastVisit": "2025-03-20",
+  "temperature": "98.9°F",
+  "bloodPressure": "121/79",
+  "pulse": "75 bpm",
+  "phone": "9876500011",
+  "address": "33 Lotus Street",
+  "city": "Chennai",
+  "pastAppointments": 4,
+  "upcomingAppointments": 1,
+  "medications": [
+    {
+      "name": "Ibuprofen",
+      "dosage": "400mg",
+      "frequency": "Twice a day",
+      "duration": "5 days",
+       "notes": "Before food"
+    },
+    {
+      "name": "Pantoprazole",
+      "dosage": "300mg",
+      "frequency": "Once a day",
+      "duration": "10 days",
+       "notes": "Before food"
+    },
+    {
+      "name": "Vitamin C",
+      "dosage": "1000mg",
+      "frequency": "Once a day",
+      "duration": "7 days",
+       "notes": "Before food"
+    }
+  ],
+  "tests": [
+    {
+      "testName": "CBC",
+      "testDate": "2025-06-14",
+      "status": "Completed",
+      "result": "Normal"
+    },
+    {
+      "testName": "ECG",
+      "testDate": "2025-06-14",
+      "status": "Completed",
+      "result": "Normal rhythm"
+    },
+    {
+      "testName": "COVID-19 Antigen",
+      "testDate": "2025-06-15",
+      "status": "In Progress",
+      "result": "Awaiting result"
+    }
+  ],
+  "visitHistory": [
+    {
+      "date": "2024-08-10",
+      "reason": "Follow-up",
+      "speciality": "Neurology",
+      "doctor": "Dr. Priya Nair"
+    },
+    {
+      "date": "2024-11-22",
+      "reason": "Migraine",
+      "speciality": "Neurology",
+      "doctor": "Dr. Vinod Shetty"
+    },
+    {
+      "date": "2025-01-18",
+      "reason": "Routine checkup",
+      "speciality": "General Medicine",
+      "doctor": "Dr. Arvind Menon"
+    }
+  ]
+},
+{
+  "id": 4,
+  "name": "Amit Kapoor",
+  "gender": "Male",
+  "date": "2025-06-17",
+  "time": "03:45 PM",
+  "age": 42,
+  "blood": "O+",
+  "disease": "Asthma",
+  "reason": "Breathing issue",
+  "doctor": "Dr. Rajesh Iyer",
+  "doctorImage": "https://randomuser.me/api/portraits/men/41.jpg",
+  "image": "https://randomuser.me/api/portraits/men/51.jpg",
+  "lastVisit": "2025-05-03",
+  "temperature": "98.4°F",
+  "bloodPressure": "128/80",
+  "pulse": "72 bpm",
+  "phone": "9898989898",
+  "address": "27 Hill View",
+  "city": "Hyderabad",
+  "pastAppointments": 7,
+  "upcomingAppointments": 2,
+  "medications": [
+    {
+      "name": "Levocetirizine",
+      "dosage": "500mg",
+      "frequency": "Once a day",
+      "duration": "14 days",
+       "notes": "Before food"
+    },
+    {
+      "name": "Pantoprazole",
+      "dosage": "400mg",
+      "frequency": "Once a day",
+      "duration": "10 days",
+       "notes": "Before food"
+    },
+    {
+      "name": "Vitamin D3",
+      "dosage": "600mg",
+      "frequency": "Once a day",
+      "duration": "30 days",
+       "notes": "Before food"
+    }
+  ],
+  "tests": [
+    {
+      "testName": "X-Ray",
+      "testDate": "2025-06-16",
+      "status": "Completed",
+      "result": "Mild bronchial thickening"
+    },
+    {
+      "testName": "CBC",
+      "testDate": "2025-06-15",
+      "status": "Completed",
+      "result": "Normal"
+    },
+    {
+      "testName": "COVID-19 Antigen",
+      "testDate": "2025-06-17",
+      "status": "In Progress",
+      "result": "Awaiting result"
+    }
+  ],
+  "visitHistory": [
+    {
+      "date": "2024-07-01",
+      "reason": "Asthma check-up",
+      "speciality": "Cardiology",
+      "doctor": "Dr. Rajesh Iyer"
+    },
+    {
+      "date": "2024-11-09",
+      "reason": "Breathing issue",
+      "speciality": "ENT",
+      "doctor": "Dr. Meera Rao"
+    },
+    {
+      "date": "2025-02-20",
+      "reason": "Routine checkup",
+      "speciality": "General Medicine",
+      "doctor": "Dr. Rekha Singh"
+    }
+  ]
+},
+{
+  "id": 5,
+  "name": "Divya Sharma",
+  "gender": "Female",
+  "date": "2025-06-20",
+  "time": "10:15 AM",
+  "age": 29,
+  "blood": "B-",
+  "disease": "Cold",
+  "reason": "Cough",
+  "doctor": "Dr. Meera Rao",
+  "doctorImage": "https://randomuser.me/api/portraits/men/41.jpg",
+  "image": "https://randomuser.me/api/portraits/women/45.jpg",
+  "lastVisit": "2025-04-18",
+  "temperature": "99.0°F",
+  "bloodPressure": "120/78",
+  "pulse": "69 bpm",
+  "phone": "9876012345",
+  "address": "11 Ashok Marg",
+  "city": "Pune",
+  "pastAppointments": 5,
+  "upcomingAppointments": 1,
+  "medications": [
+    {
+      "name": "Paracetamol",
+      "dosage": "500mg",
+      "frequency": "Thrice a day",
+      "duration": "5 days",
+      "notes": "After food"
+    },
+    {
+      "name": "Calcium",
+      "dosage": "500mg",
+      "frequency": "Once a day",
+      "duration": "15 days",
+      "notes": "After food"
+    },
+    {
+      "name": "Ibuprofen",
+      "dosage": "400mg",
+      "frequency": "Twice a day",
+      "duration": "7 days",
+      "notes": "After food"
+    }
+  ],
+  "tests": [
+    {
+      "testName": "CBC",
+      "testDate": "2025-06-19",
+      "status": "Completed",
+      "result": "Slight variation"
+    },
+    {
+      "testName": "Liver Function Test",
+      "testDate": "2025-06-18",
+      "status": "Completed",
+      "result": "All normal"
+    },
+    {
+      "testName": "COVID-19 Antigen",
+      "testDate": "2025-06-20",
+      "status": "In Progress",
+      "result": "Awaiting result"
+    }
+  ],
+  "visitHistory": [
+    {
+      "date": "2024-06-30",
+      "reason": "Dry cough",
+      "speciality": "ENT",
+      "doctor": "Dr. Sunil Nair"
+    },
+    {
+      "date": "2024-12-01",
+      "reason": "Fever",
+      "speciality": "General Medicine",
+      "doctor": "Dr. Rekha Singh"
+    },
+    {
+      "date": "2025-01-15",
+      "reason": "Throat infection",
+      "speciality": "ENT",
+      "doctor": "Dr. Meera Rao"
+    }
+  ]
+},
+{
+  "id": 6,
+  "name": "Suresh Kumar",
+  "gender": "Male",
+  "date": "2025-06-16",
+  "time": "02:00 PM",
+  "age": 56,
+  "blood": "O-",
+  "disease": "Arthritis",
+  "reason": "Joint pain",
+  "doctor": "Dr. Anusha Reddy",
+  "doctorImage": "https://randomuser.me/api/portraits/men/41.jpg",
+  "image": "https://randomuser.me/api/portraits/men/58.jpg",
+  "lastVisit": "2025-03-11",
+  "temperature": "98.1°F",
+  "bloodPressure": "134/82",
+  "pulse": "70 bpm",
+  "phone": "9876032111",
+  "address": "72 Patel Nagar",
+  "city": "Ahmedabad",
+  "pastAppointments": 6,
+  "upcomingAppointments": 1,
+  "medications": [
+    {
+      "name": "Amlodipine",
+      "dosage": "500mg",
+      "frequency": "Once a day",
+      "duration": "25 days",
+      "notes": "After food"
+    },
+    {
+      "name": "Pantoprazole",
+      "dosage": "400mg",
+      "frequency": "Twice a day",
+      "duration": "14 days",
+      "notes": "After food"
+    },
+    {
+      "name": "Vitamin D3",
+      "dosage": "600mg",
+      "frequency": "Once a day",
+      "duration": "20 days",
+      "notes": "After food"
+    }
+  ],
+  "tests": [
+    {
+      "testName": "X-Ray",
+      "testDate": "2025-06-15",
+      "status": "Completed",
+      "result": "Mild degeneration in joints"
+    },
+    {
+      "testName": "CBC",
+      "testDate": "2025-06-14",
+      "status": "Completed",
+      "result": "Normal"
+    },
+    {
+      "testName": "COVID-19 Antigen",
+      "testDate": "2025-06-16",
+      "status": "In Progress",
+      "result": "Awaiting result"
+    }
+  ],
+  "visitHistory": [
+    {
+      "date": "2024-07-17",
+      "reason": "Back pain",
+      "speciality": "Orthopedics",
+      "doctor": "Dr. Ajay Gupta"
+    },
+    {
+      "date": "2024-10-12",
+      "reason": "Knee swelling",
+      "speciality": "Orthopedics",
+      "doctor": "Dr. Anusha Reddy"
+    },
+    {
+      "date": "2025-01-05",
+      "reason": "Routine checkup",
+      "speciality": "General Medicine",
+      "doctor": "Dr. Arvind Menon"
+    }
+  ]
+},
+{
+  "id": 7,
+  "name": "Ravi Sharma",
+  "gender": "Male",
+  "date": "2025-06-18",
+  "time": "11:30 AM",
+  "age": 39,
+  "blood": "A+",
+  "disease": "Fever",
+  "reason": "High fever",
+  "doctor": "Dr. Rekha Singh",
+  "doctorImage": "https://randomuser.me/api/portraits/men/41.jpg",
+  "image": "https://randomuser.me/api/portraits/men/49.jpg",
+  "lastVisit": "2025-05-01",
+  "temperature": "99.2°F",
+  "bloodPressure": "125/76",
+  "pulse": "73 bpm",
+  "phone": "9876504567",
+  "address": "58 Church Road",
+  "city": "Delhi",
+  "pastAppointments": 4,
+  "upcomingAppointments": 2,
+  "medications": [
+    {
+      "name": "Paracetamol",
+      "dosage": "500mg",
+      "frequency": "Thrice a day",
+      "duration": "5 days",
+      "notes": "Before food"
+    },
+    {
+      "name": "Ibuprofen",
+      "dosage": "400mg",
+      "frequency": "Twice a day",
+      "duration": "3 days",
+      "notes": "Before food"
+    },
+    {
+      "name": "Vitamin C",
+      "dosage": "1000mg",
+      "frequency": "Once a day",
+      "duration": "7 days",
+      "notes": "Before food"
+    }
+  ],
+  "tests": [
+    {
+      "testName": "CBC",
+      "testDate": "2025-06-17",
+      "status": "Completed",
+      "result": "Slight elevation in WBC"
+    },
+    {
+      "testName": "Liver Function Test",
+      "testDate": "2025-06-17",
+      "status": "Completed",
+      "result": "All normal"
+    },
+    {
+      "testName": "COVID-19 Antigen",
+      "testDate": "2025-06-18",
+      "status": "In Progress",
+      "result": "Awaiting result"
+    }
+  ],
+  "visitHistory": [
+    {
+      "date": "2024-06-25",
+      "reason": "Fever and cold",
+      "speciality": "General Medicine",
+      "doctor": "Dr. Arvind Menon"
+    },
+    {
+      "date": "2024-09-30",
+      "reason": "Throat infection",
+      "speciality": "ENT",
+      "doctor": "Dr. Sunil Nair"
+    },
+    {
+      "date": "2025-02-10",
+      "reason": "Routine checkup",
+      "speciality": "General Medicine",
+      "doctor": "Dr. Rekha Singh"
+    }
+  ]
+},
+{
+  "id": 8,
+  "name": "Meena Joshi",
+  "gender": "Female",
+  "date": "2025-06-19",
+  "time": "02:30 PM",
+  "age": 63,
+  "blood": "B+",
+  "disease": "Hypertension",
+  "reason": "Blood pressure check",
+  "doctor": "Dr. Rajesh Iyer",
+  "doctorImage": "https://randomuser.me/api/portraits/men/41.jpg",
+  "image": "https://randomuser.me/api/portraits/women/56.jpg",
+  "lastVisit": "2025-04-25",
+  "temperature": "98.7°F",
+  "bloodPressure": "138/84",
+  "pulse": "74 bpm",
+  "phone": "9876077885",
+  "address": "46 MG Road",
+  "city": "Jaipur",
+  "pastAppointments": 7,
+  "upcomingAppointments": 1,
+  "medications": [
+    {
+      "name": "Amlodipine",
+      "dosage": "500mg",
+      "frequency": "Once a day",
+      "duration": "30 days",
+      "notes": "Before food"
+    },
+    {
+      "name": "Losartan",
+      "dosage": "50mg",
+      "frequency": "Once a day",
+      "duration": "30 days",
+       "notes": "After food"
+    },
+    {
+      "name": "Pantoprazole",
+      "dosage": "400mg",
+      "frequency": "Once a day",
+      "duration": "15 days",
+       "notes": "After food"
+    }
+  ],
+  "tests": [
+    {
+      "testName": "Blood Sugar",
+      "testDate": "2025-06-18",
+      "status": "Completed",
+      "result": "Normal"
+    },
+    {
+      "testName": "ECG",
+      "testDate": "2025-06-17",
+      "status": "Completed",
+      "result": "Normal"
+    },
+    {
+      "testName": "COVID-19 Antigen",
+      "testDate": "2025-06-19",
+      "status": "In Progress",
+      "result": "Awaiting result"
+    }
+  ],
+  "visitHistory": [
+    {
+      "date": "2024-08-05",
+      "reason": "High BP",
+      "speciality": "Cardiology",
+      "doctor": "Dr. Rajesh Iyer"
+    },
+    {
+      "date": "2024-11-12",
+      "reason": "Routine Checkup",
+      "speciality": "General Medicine",
+      "doctor": "Dr. Rekha Singh"
+    },
+    {
+      "date": "2025-01-28",
+      "reason": "Chest tightness",
+      "speciality": "Cardiology",
+      "doctor": "Dr. Nisha Varma"
+    }
+  ]
+},
+{
+  "id": 9,
+  "name": "Anjali Verma",
+  "gender": "Female",
+  "date": "2025-06-15",
+  "time": "12:45 PM",
+  "age": 33,
+  "blood": "O+",
+  "disease": "Migraine",
+  "reason": "Severe headache",
+  "doctor": "Dr. Vinod Shetty",
+  "doctorImage": "https://randomuser.me/api/portraits/men/41.jpg",
+  "image": "https://randomuser.me/api/portraits/women/50.jpg",
+  "lastVisit": "2025-05-02",
+  "temperature": "98.5°F",
+  "bloodPressure": "122/78",
+  "pulse": "72 bpm",
+  "phone": "9876047890",
+  "address": "19 Park Avenue",
+  "city": "Lucknow",
+  "pastAppointments": 3,
+  "upcomingAppointments": 1,
+  "medications": [
+    {
+      "name": "Ibuprofen",
+      "dosage": "400mg",
+      "frequency": "Twice a day",
+      "duration": "7 days",
+       "notes": "After food"
+    },
+    {
+      "name": "Pantoprazole",
+      "dosage": "300mg",
+      "frequency": "Once a day",
+      "duration": "10 days",
+       "notes": "After food"
+    },
+    {
+      "name": "Vitamin C",
+      "dosage": "1000mg",
+      "frequency": "Once a day",
+      "duration": "15 days",
+       "notes": "After food"
+    }
+  ],
+  "tests": [
+    {
+      "testName": "CBC",
+      "testDate": "2025-06-14",
+      "status": "Completed",
+      "result": "Normal"
+    },
+    {
+      "testName": "MRI Brain",
+      "testDate": "2025-06-13",
+      "status": "Completed",
+      "result": "Normal scan"
+    },
+    {
+      "testName": "COVID-19 Antigen",
+      "testDate": "2025-06-15",
+      "status": "In Progress",
+      "result": "Awaiting result"
+    }
+  ],
+  "visitHistory": [
+    {
+      "date": "2024-08-18",
+      "reason": "Dizziness",
+      "speciality": "Neurology",
+      "doctor": "Dr. Vinod Shetty"
+    },
+    {
+      "date": "2024-11-10",
+      "reason": "Headache",
+      "speciality": "Neurology",
+      "doctor": "Dr. Priya Nair"
+    },
+    {
+      "date": "2025-01-07",
+      "reason": "Migraine",
+      "speciality": "Neurology",
+      "doctor": "Dr. Vinod Shetty"
+    }
+  ]
+},
+
+{
+  "id": 10,
+  "name": "Mohammed Iqbal",
+  "gender": "Male",
+  "date": "2025-06-21",
+  "time": "04:00 PM",
+  "age": 59,
+  "blood": "AB+",
+  "disease": "Diabetes",
+  "reason": "Regular checkup",
+  "doctor": "Dr. Arvind Menon",
+  "doctorImage": "https://randomuser.me/api/portraits/men/41.jpg",
+  "image": "https://randomuser.me/api/portraits/men/54.jpg",
+  "lastVisit": "2025-05-14",
+  "temperature": "97.9°F",
+  "bloodPressure": "129/80",
+  "pulse": "71 bpm",
+  "phone": "9876054321",
+  "address": "7 Lotus Street",
+  "city": "Bengaluru",
+  "pastAppointments": 9,
+  "upcomingAppointments": 1,
+  "medications": [
+    {
+      "name": "Metformin",
+      "dosage": "500mg",
+      "frequency": "Twice a day",
+      "duration": "30 days",
+      "notes": "Before food"
+      
+    },
+    {
+      "name": "Vitamin D3",
+      "dosage": "600mg",
+      "frequency": "Once a day",
+      "duration": "20 days",
+      "notes": "Before food"
+    },
+    {
+      "name": "Pantoprazole",
+      "dosage": "400mg",
+      "frequency": "Once a day",
+      "duration": "15 days",
+      "notes": "Before food"
+    }
+  ],
+  "tests": [
+    {
+      "testName": "Blood Sugar",
+      "testDate": "2025-06-20",
+      "status": "Completed",
+      "result": "Slight variation"
+    },
+    {
+      "testName": "Liver Function Test",
+      "testDate": "2025-06-19",
+      "status": "Completed",
+      "result": "Normal"
+    },
+    {
+      "testName": "COVID-19 Antigen",
+      "testDate": "2025-06-21",
+      "status": "In Progress",
+      "result": "Awaiting result"
+    }
+  ],
+  "visitHistory": [
+    {
+      "date": "2024-08-09",
+      "reason": "Diabetes follow-up",
+      "speciality": "General Medicine",
+      "doctor": "Dr. Arvind Menon"
+    },
+    {
+      "date": "2024-11-20",
+      "reason": "Routine Checkup",
+      "speciality": "General Medicine",
+      "doctor": "Dr. Rekha Singh"
+    },
+    {
+      "date": "2025-03-03",
+      "reason": "Blood sugar monitoring",
+      "speciality": "General Medicine",
+      "doctor": "Dr. Arvind Menon"
+    }
+  ]
+}
+
 ]

@@ -1,0 +1,293 @@
+.profile-box-container {
+  position: fixed;
+  inset: 0;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.profile-box-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem 2rem;
+  width: 88%;
+  height:75%;
+  max-width: 1000px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.header-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Three equal columns */
+  gap: 4rem;
+  margin-bottom: 15px;
+}
+
+.header-box {
+  background: #C0E6DF;
+  border-radius: 18px;
+  padding: 1rem 2rem;
+  max-height: 130px; /* Ensures same height for all boxes */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.header-avatar {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  margin-top:10px;
+}
+
+.header-name {
+  font-weight: 600;
+  font-size: 1.2rem;
+    margin-bottom: 0.05rem;
+}
+
+.header-sub {
+  font-size: 0.75rem;
+  color:#333;
+ font-weight: 600;
+}
+
+
+.header-info {
+  text-align: center;
+}
+
+.appointments {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  gap: 0.5rem; 
+   align-items: center; 
+}
+
+.appointments div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.5rem;
+  gap: 0.3rem; /* reduce vertical gap between number and label */
+}
+
+.appointments h2 {
+  margin-top:0.5rem;
+  font-size: 2.2rem;
+  font-weight: bold;
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
+.status1,
+.status2 {
+  font-size: 0.9rem;
+  
+  color: #808080;
+}
+.label1 {
+  font-size: 1rem;   /* Increase size */
+  font-weight: bold;
+  margin-bottom: 0.5rem;  /* Space between label and numbers */
+  padding-top: 0;         /* Remove padding from top */
+
+}
+
+.appointment-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+    gap: 0.3rem;
+}
+
+.vertical-divider {
+  width: 2px;
+  height: 40px; /* ✅ Adjust this value to control height */
+  background-color: #808080;
+ margin-left: 1.2rem;  
+  align-self: stretch;
+  margin-top: 0.75rem;
+}
+.status2{
+  margin-left: 0.5rem;
+}
+.label {
+  font-weight: 550;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+  margin-bottom: 0.2rem;
+  color: #333;
+  text-align: left;   /* Align text left */
+  width: 100%; 
+  padding-left: 1rem;        /* Take full width for alignment to work */
+}
+
+.label-value {
+  margin:0;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  color: #08834d;
+  text-align: center;
+  font-size: 1rem;
+  padding-left: 20px;
+}
+
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+    gap:3rem;
+}
+
+.tabs button {
+  width:360px;
+  height: 43px;
+  font-size: 1.2rem; 
+  font-weight: 550;
+  transition: background-color 0.3s ease;
+  border: none;
+  background: #FFFFFF;
+  border-radius: 8px;
+margin-left: 1rem;
+margin-right: 1rem;
+  cursor: pointer;
+   box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.1),    /* soft shadow */
+    0 6px 12px rgba(0, 0, 0, 0.08),  /* deeper shadow */
+    0 1px 3px rgba(0, 0, 0, 0.12);   /* crisp bottom */
+
+}
+.tabsorg {
+  background-color: white;
+  border-radius: 16px;
+
+  /* Only bottom, left, and right shadow — zero top blur or offset */
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.1),    /* bottom */
+    6px 0 12px rgba(0, 0, 0, 0.05),   /* right */
+   -6px 0 12px rgba(0, 0, 0, 0.05);   /* left */
+
+  padding: 0.4rem 1rem 2rem 1rem;
+}
+
+
+
+.tabs .active {
+  background: #4caf84;
+  color: white;
+}
+.tab-content {
+  background-color: white;
+  border-radius: 16px;
+  padding: 0.1rem 2rem;
+  
+
+}
+
+/* Table structure */
+.tab-content table {
+  width: 100%;
+  border-collapse: separate;      /* change this */
+  border-spacing: 0 10px;         /* adds vertical gap of 10px between rows */
+}
+
+.tab-content th {
+  text-align: left;
+  font-size: 0.95rem;
+  color: #808080;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+   border: none;
+}
+
+.tab-content td {
+  background-color: #f9f9f9;
+  padding: 0.9rem 1rem;
+   border: none;
+  font-size: 0.95rem;
+  color: #222;
+  vertical-align: middle;
+}
+
+/* Specific padding to first and last cells for spacing */
+.tab-content td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.tab-content td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+.tab-content tbody tr:hover td {
+  background-color: #205C45; /* light green background */
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.tab-content tbody tr:hover td {
+  color: white; /* darker green text */
+}
+
+.tab-content tbody tr {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  overflow: hidden; /* helps rounding corners */
+  transition: background-color 0.3s ease;
+}
+
+.tab-content tbody tr:hover {
+  background-color: #d9f2e3; /* light green hover */
+}
+
+/* PDF Button */
+.pdf-btn {
+  background: #4caf84;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: background 0.3s ease;
+}
+
+.pdf-btn:hover {
+  background: #3c9a42;
+}
+
+.prescription-section {
+  position: relative;
+}
+
+.print-icon-wrapper {
+  position: absolute;
+  
+  right: 5px;
+}
+
+.print-logo {
+  font-size: 1.4rem;
+  color: #070f1c;
+  cursor: pointer;
+}

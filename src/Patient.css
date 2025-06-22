@@ -1,0 +1,307 @@
+.patients-container {
+  padding: 2rem;
+  font-family: 'Poppins', sans-serif;
+   background: #FFFFF0;
+}
+
+.patients-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-heading {
+  font-size: 2rem;
+  font-weight: 550;
+  color: #000;
+  margin: 0;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 230px;
+  left:10%
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #888;
+  width: 16px;
+  height: 16px;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 0.75rem 1rem 0.5rem 2rem;
+  border-radius: 20px;
+  border: 1px solid #888;
+  font-size: 0.9rem;
+  background-color: #fff;
+}
+.profile-box1 {
+  display: flex;
+ border-radius: 18px;
+  gap: 0.75rem;
+  background: #FFFFFF;
+   width: 180px;
+  position: relative;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid #888;
+}
+
+.profile-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  object-fit: cover;
+  
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+   
+}
+
+.profile-name {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #205C45;
+}
+
+
+.vectorlogo{
+
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  align-items: center;
+   transform: translateY(-50%);
+
+}
+
+.patients-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+
+.filters select {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #888;
+  font-size: 0.9rem;
+  background-color: #fff;
+}
+.filter-group-row {
+  display: flex;
+   align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-label {
+  font-size: 1.3rem;
+  color: #333;
+  font-weight: 500;
+}
+.sortby select {
+  width: 150px;  /* Large width */
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  
+}
+
+
+
+.sort-select {
+  color: grey; /* selected value will appear grey */
+}
+.add-button{
+  
+  color: #e0e0e0;
+  border-radius: 6px;
+  padding: 0.40rem 0.6rem;
+   
+ margin-left: 25px; 
+  border: #4caf84;
+    background: #4CAF83;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+
+
+.patients-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  gap: 3rem;
+}
+
+.patient-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  text-align: left;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+}
+.patient-info-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.profile-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+
+}
+.patient-text h3 {
+  font-size: 1.4rem;
+  font-weight: 550;
+  margin: 0;
+}
+
+.patient-text p {
+  margin: 0.2rem 0 0;
+   color: #777;
+  font-size: 0.95rem;
+}
+.card-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  
+}
+.full-width-divider-wrapper {
+  margin-left: -1rem;
+  margin-right: -1rem;
+}
+
+
+.visit {
+  font-size: 1rem;
+  color: #777;
+}
+
+.view-btn {
+  margin-top: auto;
+  background: none;
+  border: none;
+  color: #2066c0;
+  padding: 0;
+  font-weight: 500;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+/* Calendar Container Styling */
+.custom-calendar-container {
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+/* Clear Button at Bottom-Right */
+.clear-button {
+ position: absolute;
+  top: 89%;
+  right: 8px;
+  background-color: #4CAF83;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 3px 8px;
+  cursor: pointer;
+  z-index: 10;
+
+}
+.custom-calendar-wrapper {
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+/* Custom Header Inside Calendar */
+.custom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0.5rem;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Calendar Arrow Buttons */
+.month-arrow {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 2px 8px;
+}
+
+/* Toggle Button for Date/Month */
+.toggle-button {
+  
+margin-left: 1rem;
+  background-color: #4CAF83;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 2px 10px;
+  cursor: pointer;
+}
+.date-input {
+  padding: 10px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: white;
+  color: #333;
+  width: 110px;
+  transition: all 0.3s ease;
+}
+
+.date-input:focus {
+  border-color: #4b9ce2;
+  outline: none;
+}
+.profile-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
