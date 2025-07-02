@@ -3,7 +3,7 @@ import './IntakePage.css';
 import './DoctorComment.css';
 import BetaVersion from './BetaVersion.jsx';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser} from "@fortawesome/free-solid-svg-icons";
+import { faUser,faFolderOpen, faXmark} from "@fortawesome/free-solid-svg-icons";
 
 const IntakePage = ({ onClose, patient }) => {
   const [activeTab, setActiveTab] = useState('intake');
@@ -20,6 +20,23 @@ const popupRef = useRef();
 const [appointmentDates, setAppointmentDates] = useState(['', '', '']);
 const [appointmentStatuses, setAppointmentStatuses] = useState(['Not yet', 'Not yet', 'Not yet']);
 const [focusedIndex, setFocusedIndex] = useState(null);
+const [uploadedFiles, setUploadedFiles] = useState({});
+const [uploadSuccess, setUploadSuccess] = useState({});
+const intakeRef = useRef();
+useEffect(() => {
+  const handleClickOutsideIntake = (event) => {
+    if (intakeRef.current && !intakeRef.current.contains(event.target)) {
+      onClose(); // 👈 call the parent to close the intake page
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutsideIntake);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutsideIntake);
+  };
+}, [onClose]);
+
 
 useEffect(() => {
   const handleClickOutside = (event) => {
@@ -37,7 +54,7 @@ useEffect(() => {
   };
 }, [showUpcomingPopup]);
   const handleAddMedicine = () => {
-    setMedicines([...medicines, { name: '', dosage: '', duration: '' }]);
+    setMedicines([...medicines, { name: '', dosage: '',  frequency: '', duration: '', notes: '' }]);
   };
 
   const handleChange = (index, field, value) => {
@@ -61,21 +78,35 @@ useEffect(() => {
   const handleSaveClick = () => {
     setShowConfirm(true);
   };
+const handleConfirmSave = async () => {
+  setShowConfirm(false);
 
-  const handleConfirmSave = async () => {
-    setShowConfirm(false);
-    try {
-      const response = await fetch("https://dummy-server.com/api/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ medicines, test: selectedTest, reportDate })
-      });
-      alert(response.ok ? "Prescription saved successfully!" : "Error saving prescription.");
-    } catch {
-      alert("Server error.");
-    }
-  };
+  try {
+    const formData = new FormData();
 
+    formData.append("medicines", JSON.stringify(medicines));
+    formData.append("test", selectedTest);
+    formData.append("testResults", JSON.stringify(testResults));
+    formData.append("appointmentDates", JSON.stringify(appointmentDates));
+    formData.append("appointmentStatuses", JSON.stringify(appointmentStatuses));
+
+    // Append each uploaded file
+    uploadedFiles.forEach((file, index) => {
+      formData.append(`file_${index}`, file);
+    });
+
+    const response = await fetch("https://dummy-server.com/api/save", {
+      method: "POST",
+      body: formData, // no need for headers like Content-Type; it’s handled automatically
+    });
+
+    alert(response.ok ? "Prescription saved successfully!" : "Error saving prescription.");
+  } catch {
+    alert("Server error.");
+  }
+};
+
+  
   const handleCancelSave = () => {
     setShowConfirm(false);
   };
@@ -120,11 +151,12 @@ const handleDateChange = (index, value) => {
 
   return (
     <div className="overlay">
+     <div className="intake-box" ref={intakeRef}>
       <div className="modal">
         <div className="modal-scroll">
           <div className="modal-header">
             <h2>Appointment Intake</h2>
-            <span className="close-btn" onClick={onClose}>×</span>
+            <span className="close-btn" onClick={onClose}> <FontAwesomeIcon icon={faXmark} /></span>
           </div>
 
           {/* Tabs */}
@@ -165,10 +197,11 @@ const handleDateChange = (index, value) => {
 
                 </div>
                 <div className="card card3">
-                  <h4>Doctor info</h4>
-                  <p>{patient?.doctor || 'Dr. Emily Smith'}</p>
-                  <p>{patient?.specialization || 'Cardiology'}</p>
-                </div>
+  <h4>Doctor Info</h4>
+  <p>{patient?.doctor || "not assigned"}</p>
+  <p>{patient?.specialization || "not available"}</p>
+</div>
+
                 <div className="card card2">
                   <h4>Reason for visit</h4>
                  
@@ -203,7 +236,9 @@ const handleDateChange = (index, value) => {
                     <div className="medicine-row header">
                       <div>Medicine Name</div>
                       <div>Dosage</div>
+                       <div>Frequency</div>
                       <div>Duration</div>
+                      <div>Notes</div>
                     </div>
                     {medicines.map((med, index) => (
                       <div className="medicine-row" key={index}>
@@ -215,6 +250,7 @@ const handleDateChange = (index, value) => {
                             placeholder="Enter medicine"
                           />
                         </div>
+                        
                         <div>
                           <input
                             type="text"
@@ -223,14 +259,31 @@ const handleDateChange = (index, value) => {
                             placeholder="Dosage"
                           />
                         </div>
+                          <div>
+      <input
+        type="text"
+        value={med.frequency || ''}
+        onChange={(e) => handleChange(index, 'frequency', e.target.value)}
+        placeholder=" Twice a day"
+      />
+    </div>
+      
                         <div>
                           <input
                             type="text"
                             value={med.duration}
                             onChange={(e) => handleChange(index, 'duration', e.target.value)}
-                            placeholder="Duration"
+                            placeholder="no of days"
                           />
                         </div>
+                         <div>
+      <input
+        type="text"
+        value={med.notes || ''}
+        onChange={(e) => handleChange(index, 'notes', e.target.value)}
+        placeholder="Before food"
+      />
+    </div>
                       </div>
                     ))}
                   </div>
@@ -327,7 +380,7 @@ const handleDateChange = (index, value) => {
           className="remove-button"
           title={`Remove ${selectedTest}`}
         >
-          ×
+           <FontAwesomeIcon icon={faXmark} className='remove-button' />
         </button>
       )}
 <label htmlFor="result-input">
@@ -338,63 +391,126 @@ const handleDateChange = (index, value) => {
     : 'Result'}
 </label>
 
-     
-      <input
-        type="text"
-        id="result-input"
-        placeholder={
-          selectedTest ? `Enter result for ${selectedTest}` : 'Enter result'
-        }
-       value={
-  selectedTest
-    ? testResults[selectedTest === 'Other' ? customTestName : selectedTest] || ''
-    : ''
-}
-onChange={(e) => {
-  if (selectedTest) {
-    const key = selectedTest === 'Other' ? customTestName : selectedTest;
-    if (key) {
-      setTestResults({ ...testResults, [key]: e.target.value });
-      if (!selectedTests.includes(key)) {
-        setSelectedTests([...selectedTests, key]);
+     <div style={{ position: "relative", display: "flex", flexDirection: "column" }}>
+  <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+    <input
+      type="text"
+      id="result-input"
+      placeholder={
+        selectedTest ? `Enter result for ${selectedTest}` : 'Enter result'
       }
-    }
+      value={
+        selectedTest
+          ? testResults[selectedTest === 'Other' ? customTestName : selectedTest] || ''
+          : ''
+      }
+      onChange={(e) => {
+        if (selectedTest) {
+          const key = selectedTest === 'Other' ? customTestName : selectedTest;
+          if (key) {
+            setTestResults({ ...testResults, [key]: e.target.value });
+            if (!selectedTests.includes(key)) {
+              setSelectedTests([...selectedTests, key]);
+            }
+          }
+        }
+      }}
+      className="report-input"
+      disabled={!selectedTest}
+      style={{ paddingRight: "2rem" }}
+    />
+
+    {/* Hidden File Input */}
+    <input
+      type="file"
+      id="file-upload"
+      style={{ display: "none" }}
+    onChange={(e) => {
+  if (selectedTest && e.target.files.length > 0) {
+    const fileName = e.target.files[0].name;
+
+    setUploadedFiles((prev) => ({
+      ...prev,
+      [selectedTest]: fileName,
+    }));
+
+    setUploadSuccess((prev) => ({
+      ...prev,
+      [selectedTest]: true,
+    }));
+
+    setTimeout(() => {
+      setUploadSuccess((prev) => ({
+        ...prev,
+        [selectedTest]: false,
+      }));
+    }, 3000); // Message disappears after 3 seconds
   }
 }}
 
-        className="report-input"
-        disabled={!selectedTest}
-      />
+
+    />
+
+    {/* Icon to trigger upload */}
+    <label
+      htmlFor="file-upload"
+      style={{
+        position: "absolute",
+        right: "8px",
+        cursor: "pointer",
+        fontSize: "1rem",
+        color: "#007bff",
+      }}
+      title="Upload file"
+    >
+     <FontAwesomeIcon icon={faFolderOpen} className='file-icon' />
+    </label>
+  </div>
+{selectedTest && uploadSuccess[selectedTest] && (
+  <p style={{ fontSize: "0.8rem", color: "green", marginTop: "4px" }}>
+    {uploadedFiles[selectedTest]} uploaded successfully!
+  </p>
+)}
+
+
+</div>
+
+
+
+     
     </div>
 
     {/* Additional input fields for previously selected tests (excluding current selection) */}
     {selectedTests
-      .filter((test) => test !== selectedTest)
-      .map((test, index) => (
-        <div className="input-group" key={index} style={{ position: 'relative' }}>
-          {/* ❌ Close Button */}
-          <button
-            onClick={() => {
-              const updatedTests = selectedTests.filter((t) => t !== test);
-              const updatedResults = { ...testResults };
-              delete updatedResults[test];
-              setSelectedTests(updatedTests);
+  .filter((test) => test !== selectedTest)
+  .map((test, index) => (
+    <div className="input-group" key={index} style={{ position: 'relative' }}>
+      {/* ❌ Close Button */}
+      <button
+        onClick={() => {
+          const updatedTests = selectedTests.filter((t) => t !== test);
+          const updatedResults = { ...testResults };
+          delete updatedResults[test];
+          setSelectedTests(updatedTests);
 
-              // Reset selectedTest if it's the one being removed
-              if (selectedTest === test) {
-                setSelectedTest('');
-              }
+          if (selectedTest === test) {
+            setSelectedTest('');
+          }
 
-              setTestResults(updatedResults);
-            }}
-            className="remove-button"
-            title={`Remove ${test}`}
-          >
-            ×
-          </button>
+          setTestResults(updatedResults);
+        }}
+        className="remove-button"
+        title={`Remove ${test}`}
+      >
+         <FontAwesomeIcon icon={faXmark} className='remove-button' />
+      </button>
 
-          {/* Input Field */}
-          <label htmlFor={`result-${index}`}>{test} Result</label>
+      {/* Label */}
+      <label htmlFor={`result-${index}`}>{test} Result</label>
+
+      {/* Input + Upload Icon in one row */}
+      <div style={{ position: "relative", display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
           <input
             type="text"
             id={`result-${index}`}
@@ -404,9 +520,61 @@ onChange={(e) => {
               setTestResults({ ...testResults, [test]: e.target.value })
             }
             className="report-input"
+            style={{ paddingRight: "2rem" }}
           />
+
+          {/* Hidden File Input */}
+          <input
+            type="file"
+            id={`file-upload-${index}`}
+            style={{ display: "none" }}
+            onChange={(e) => {
+              if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                setUploadedFiles((prev) => ({
+                  ...prev,
+                  [test]: fileName,
+                }));
+                setUploadSuccess((prev) => ({
+                  ...prev,
+                  [test]: true,
+                }));
+                setTimeout(() => {
+                  setUploadSuccess((prev) => ({
+                    ...prev,
+                    [test]: false,
+                  }));
+                }, 3000);
+              }
+            }}
+          />
+
+          {/* Upload Icon */}
+          <label
+            htmlFor={`file-upload-${index}`}
+            style={{
+              position: "absolute",
+              right: "8px",
+              cursor: "pointer",
+              fontSize: "1rem",
+              color: "#007bff",
+            }}
+            title="Upload file"
+          >
+            <FontAwesomeIcon icon={faFolderOpen} className='file-icon' />
+          </label>
         </div>
-      ))}
+
+        {/* Success Message */}
+        {uploadSuccess[test] && (
+          <p style={{ fontSize: "0.8rem", color: "green", marginTop: "4px" }}>
+            {uploadedFiles[test]} uploaded successfully!
+          </p>
+        )}
+      </div>
+    </div>
+  ))}
+
   </div>
 </div>
 
@@ -435,7 +603,7 @@ onChange={(e) => {
   <div className="beta-section beta-white-bg">
     <BetaVersion
       patient={patient}
-      onCancel={() => console.log('Voice cancelled')}
+         onCancel={() => console.log('Voice cancelled')}
       onSubmit={(data) =>
         console.log('Voice submitted:', data.transcript, 'Rating:', data.rating)
       }
@@ -446,11 +614,18 @@ onChange={(e) => {
       
 {activeTab === 'comments' && (
   <div className="doctor-comment-section">
-   <img
-  src={patient?.doctorImage || '/images/doctor-avatar.png'}
-  alt={patient?.doctor || "Doctor Avatar"}
-  className="doctorAvatar"
-/>
+  {patient?.doctorImage ? (
+    <img
+      src={patient.doctorImage}
+      alt={patient?.doctor || "Doctor Avatar"}
+      className="doctorAvatar1"
+    />
+  ) : (
+    <FontAwesomeIcon
+      icon={faUser}
+      className="doctorAvatar1 default-avatar"
+    />
+  )}
 
     <h3 className="comment-heading">Comments</h3>
    <textarea
@@ -516,7 +691,11 @@ onChange={(e) => {
     const dateTime = appointmentDates[index];
     const isFocused = focusedIndex === index;
     const formattedValue = dateTime
-      ? new Date(dateTime).toLocaleDateString("en-US") +
+      ? new Date(dateTime).toLocaleDateString("en-US", {
+  month: "long",  // shows full month name
+  day: "numeric",
+  year: "numeric",
+}) +
         " at " +
         new Date(dateTime).toLocaleTimeString("en-US", {
           hour: "2-digit",
@@ -572,7 +751,7 @@ onChange={(e) => {
     </div>
   </div>
 )}
-
+</div>
         </div>
       </div>
     </div>

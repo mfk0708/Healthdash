@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './BetaVersion.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMicrophone, faStar } from "@fortawesome/free-solid-svg-icons";
+import { faMicrophone, faStar, faUser } from "@fortawesome/free-solid-svg-icons";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 const BetaVersion = ({ onCancel, onSubmit, patient }) => {
@@ -55,14 +55,21 @@ const BetaVersion = ({ onCancel, onSubmit, patient }) => {
 
   return (
     <div className="beta-version-container">
-      <div className="doctor-header">
-        <img
-          src={patient?.doctorImage || '/images/doctor-avatar.png'}
-          alt={patient?.doctor || 'Doctor Avatar'}
-          className="doctor-avatar"
-        />
-        <span className="doctor-name">{patient?.doctor || 'Unknown Doctor'}</span>
-      </div>
+     <div className="doctor-header">
+  {patient?.doctorImage ? (
+    <img
+      src={patient.doctorImage}
+      alt={patient.doctor || 'Doctor Avatar'}
+      className="doctor-avatar"
+    />
+  ) : (
+    <FontAwesomeIcon
+      icon={faUser}
+      className="doctor-avatar"
+    />
+  )}
+  <span className="doctor-name">{patient?.doctor || 'Unknown Doctor'}</span>
+</div>
 
       <div className="voice-card">
        <div className="mic-box" onClick={toggleRecording}>

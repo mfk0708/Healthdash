@@ -60,12 +60,10 @@
 }
 
 .close-btn {
-  font-size: 1.25rem;
+  font-size: 1.10rem;
   cursor: pointer;
   margin-right: 20px;
 }
-
-/* Tabs */
 .tabs {
   display: flex;
   gap: 1rem;
@@ -77,13 +75,22 @@
 .tab {
   color: #888;
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.4rem 0.75rem;
+  font-weight: 500;
 }
 
 .tab.active {
   color: #002d1f;
-  border-bottom: 2px solid #205c45;
-  padding-bottom: 0.25rem;
+  font-weight: 700;
+  background: none !important;
+  border-bottom: 2px solid #002d1f;
 }
+
+
+
+
 
 /* Info Grid */
 .info-grid {
@@ -104,7 +111,7 @@
   display: flex;
   flex-direction: column;
   break-inside: avoid;
-  border: 1px solid #D3D3D3;
+  border: 1px solid #333;
   margin-bottom: 1rem;
   width: 90%;
   max-width: 280px;
@@ -128,7 +135,7 @@
   display: flex;
   flex-direction: column;
   break-inside: avoid;
-  border: 1px solid #D3D3D3;
+  border: 1px solid #333;
   margin-bottom: 1rem;
   width: 90%;
   max-width: 280px;
@@ -171,13 +178,20 @@
 .card1 p {
   margin: 0.7rem 0;
 }
+.display-date {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 14px;
+}
 
 /* Status Button */
 .status-btn {
   margin-top: 0.1rem;
   padding: 0.5rem 2.5rem;
   background-color: #f8f8f8;
-  border: 1px solid #d3d3d3;
+  border: 1px solid #333;
   border-radius: 1rem;
   color: #002d1f;
   font-size: 0.9rem;
@@ -200,7 +214,7 @@
   background-color: #fff;
   padding: 1rem;
   border-radius: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid #333;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   margin: 0 1rem;
   display: flex;
@@ -234,7 +248,7 @@
 
 .medicine-row {
 display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* Adjust based on number of columns */
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr; /* Adjust based on number of columns */
 
   
   font-size: 0.85rem;
@@ -290,7 +304,7 @@ display: grid;
   background-color: #fff;
   border-radius: 1rem;
   padding: 1rem;
-   border: 1px solid #D3D3D3;
+   border: 1px solid #333;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -331,23 +345,31 @@ display: grid;
 }
 .remove-button {
   position: absolute;
-  top: 6px;
-  left:85%;
+  top: 4px;
+  left:88%;
   background: none;
   color: #002d1f;
   border: none;
-  font-size: 18px;
+  font-size: 13px;
   cursor: pointer;
   z-index: 1;
 }
 
-
+.file-icon {
+  color: #333;
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 0.90rem;
+}
 
 
 .followup-box-row {
   margin: 1.5rem 1rem;
   padding: 1rem 1.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid #333;
   border-radius: 10px;
   background-color: #f9f9f9;
 
@@ -501,11 +523,12 @@ input:checked + .slider:before {
   background: #FFFFFF;
   padding: 1rem 1rem;
   border-radius: 12px;
-  width: 350px;
+  width: 310px;
   height:250px;
   overflow-y: auto;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
   animation: popupFade 0.3s ease;
+  
 }
 
 
@@ -542,7 +565,7 @@ input:checked + .slider:before {
 
 .popup-patient-details h4 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.1rem;
 }
 
 .popup-patient-details p {
@@ -554,11 +577,11 @@ input:checked + .slider:before {
 .popup-doctor-name {
   position: absolute;
   right: 0;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 500;
   color: #333;
   align-self: flex-end;
-  bottom: 40px;
+  bottom: 45px;
 }
 
 

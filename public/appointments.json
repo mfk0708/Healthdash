@@ -189,7 +189,6 @@
   "disease": "Fever",
   "reason": "High fever and body ache",
   "doctor": "Dr. Sarah Johnson",
-  "doctorImage": "https://randomuser.me/api/portraits/women/44.jpg",
   "image": "https://randomuser.me/api/portraits/men/45.jpg",
   "lastVisit": "Apr 05, 2025",
   "temperature": "98.6°F",
@@ -784,7 +783,7 @@
   "gender": "Female",
   "date": "2025-06-15",
   "time": "12:45 PM",
-  "age": 33,
+  
   "blood": "O+",
   "disease": "Migraine",
   "reason": "Severe headache",

@@ -33,19 +33,20 @@ const [showProfileBox, setShowProfileBox] = useState(false);
 
   const itemsPerPage = 4;
 
-  useEffect(() => {
-    fetch("/appointments.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const withStatus = data.map((item) => ({
-          ...item,
-          status: "Pending",
-          justCompleted: false,
-        }));
-        setAppointmentsData(withStatus);
-      })
-      .catch((error) => console.error("Failed to fetch appointments:", error));
-  }, []);
+useEffect(() => {
+  fetch("https://exam-logos-portion-proposals.trycloudflare.com/dashboard")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Fetched data:", data);  // 🔍 Add this
+      const withStatus = data.map((item) => ({
+        ...item,
+        status: "Pending",
+        justCompleted: false,
+      }));
+      setAppointmentsData(withStatus);
+    })
+    .catch((error) => console.error("Failed to fetch appointments:", error));
+}, []);
 
   const toggleStatusWithDelay = (itemName, currentStatus) => {
     if (currentStatus === "Pending") {
@@ -97,7 +98,7 @@ const [showProfileBox, setShowProfileBox] = useState(false);
 
   const filteredAppointments = appointmentsData
     .filter((item) => {
-      const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
+      const matchesSearch = (item.name || "").toLowerCase().includes(search.toLowerCase());
       if (selectedDate) {
         const itemDate = new Date(item.date);
         const isSameDay = itemDate.toDateString() === selectedDate.toDateString();
@@ -258,53 +259,57 @@ const [showProfileBox, setShowProfileBox] = useState(false);
            <div className="cell status">Status</div>
         </div>
 
-        {paginatedAppointments.map((item) => (
-          <div
-            key={item.name}
-            className={`appointment-row ${activeKey === item.name ? "active" : ""}`}
-            onClick={(e) => handleRowClick(e, item.name)}
-          >
-            <div className="cell time">{item.time}</div>
-            <div className="cell date">{item.date}</div>
-            <div className="cell patient">
-              {item.image ? (
-                <img src={item.image} alt={item.name} className="avatar" />
-              ) : (
-                <FontAwesomeIcon icon={faUser} className="avatar default-avatar" />
-              )}
-              <span>{item.name}</span>
-            </div>
-            <div className="cell age">{item.age}</div>
-            <div className="cell disease">{item.disease}</div>
-          
-            <div className="cell action">
-              <button
-                className="intake-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedPatient(item);
-                  setShowIntake(true);
-                }}
-              >
-                Intake
-              </button>
-            </div>
-              <div
-              className="cell status status-text"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleStatusWithDelay(item.name, item.status);
-              }}
-              style={{
-                cursor: "pointer",
-                color: item.status === "Completed" ? "#4781FF" : "black",
-                fontWeight: 500,
-              }}
-            >
-              {item.status}
-            </div>
-          </div>
-        ))}
+ {Array.isArray(paginatedAppointments) &&paginatedAppointments.map((item) => (
+  <div
+    key={item._id ||item.name}
+    className={`appointment-row ${activeKey === item.id ? "active" : ""}`}
+    onClick={(e) => handleRowClick(e, item.id)}
+  >
+    <div className="cell time">{item.time || "—"}</div>
+    <div className="cell date">{item.date || "—"}</div>
+
+    <div className="cell patient">
+      {item.image ? (
+        <img src={item.image} alt={item.name || "No Name"} className="avatar" />
+      ) : (
+        <FontAwesomeIcon icon={faUser} className="avatar default-avatar" />
+      )}
+      <span>{item.name || "—"}</span>
+    </div>
+
+    <div className="cell age">{item.age !== undefined ? item.age : "—"}</div>
+    <div className="cell disease">{item.disease || "—"}</div>
+
+    <div className="cell action">
+      <button
+        className="intake-btn"
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedPatient(item);
+          setShowIntake(true);
+        }}
+      >
+        Intake
+      </button>
+    </div>
+
+    <div
+      className="cell status status-text"
+      onClick={(e) => {
+        e.stopPropagation();
+        toggleStatusWithDelay(item.name, item.status);
+      }}
+      style={{
+        cursor: "pointer",
+        color: item.status === "Completed" ? "#4781FF" : "black",
+        fontWeight: 500,
+      }}
+    >
+      {item.status || "—"}
+    </div>
+  </div>
+))}
+
       </div>
 
       <div className="pagination">

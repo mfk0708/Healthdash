@@ -162,12 +162,16 @@ const [selectedPatient, setSelectedPatient] = useState(null);
           filteredPatients.map((patient, index) => (
             <div className="patient-card" key={index}>
               <div className="patient-info-row">
-                <img src={patient.image} alt={patient.name} className="profile-img" />
+               {patient?.image ? (
+    <img src={patient.image} alt={patient.name || "Patient"} className="profile-img" />
+  ) : (
+    <FontAwesomeIcon icon={faUser} className="profile-img default-avatar" />
+  )}
                 <div className="patient-text">
-                  <h3>{patient.name}</h3>
-                  <p>{patient.age} • {patient.gender}</p>
+                  <h3>{patient.name || "Unknown Patient"}</h3>
+                  <p>{patient.age|| "unknown" } • {patient.gender|| "—"}</p>
                 </div>
-              </div>
+              </div> 
               <p className="visit">Last visit: {patient.lastVisit}</p>
               <div className="full-width-divider-wrapper">
                 <hr className="card-divider" />
