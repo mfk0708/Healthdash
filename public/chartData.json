@@ -1,0 +1,18 @@
+{
+  "pie": {
+    "completedPercentage": 75
+  },
+  "bar": [
+    { "day": "Mon", "hours": 5 },
+    { "day": "Tue", "hours": 6 },
+    { "day": "Wed", "hours": 4 },
+    { "day": "Thu", "hours": 7 },
+    { "day": "Fri", "hours": 6 }
+  ],
+    "doctor": {
+    "name": "Dr. Sarah Johnson",
+    "image": "images/doctor.png"
+  }
+}
+
+

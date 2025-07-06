@@ -76,7 +76,7 @@ const [selectedPatient, setSelectedPatient] = useState(null);
           />
         </div>
         <div className="profile-box1">
-          <img src="images/doctor.png" className="profile-avatar" alt="Profile" />
+          <img src="images/doctor.png" className="profile-avatar-patient" alt="Profile" />
           <div className="profile-info">
             <div className="profile-name">Dr. Sarah</div>
             <FontAwesomeIcon icon={faAngleDown} className="vectorlogo" />

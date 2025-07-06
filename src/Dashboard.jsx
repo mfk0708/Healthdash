@@ -1,9 +1,21 @@
+// Keep all your imports as-is (unchanged)
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import ProfileBox from "./ProfileBox.jsx";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 import {
   Popover,
@@ -17,7 +29,15 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faUser, faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBell,
+  faUser,
+  faAngleDown,
+  faPen,
+  faTrash,
+  faSort,
+  faSortUp, faSortDown,
+} from "@fortawesome/free-solid-svg-icons";
 import IntakePage from "./IntakePage.jsx";
 
 export default function Dashboard() {
@@ -28,161 +48,267 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showIntake, setShowIntake] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [pendingTimeouts, setPendingTimeouts] = useState({});
-const [showProfileBox, setShowProfileBox] = useState(false);
+  const [showProfileBox, setShowProfileBox] = useState(false);
+  const [showDateDropdown, setShowDateDropdown] = useState(false);
+  const [placeholderText, setPlaceholderText] = useState("Search");
+  const [editingId, setEditingId] = useState(null);
+  const [editedData, setEditedData] = useState({});
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
+const [completedPercentage, setCompletedPercentage] = useState(0);
+const [pieData, setPieData] = useState([]);
+const [barData, setBarData] = useState([]);
+const [doctorName, setDoctorName] = useState("");
+const [doctorImage, setDoctorImage] = useState("");
 
-  const itemsPerPage = 4;
+const pieColors = ["#EF4444","#FFD43B"]; // ✅ Green and Yellow
 
+
+const barColors = ["#2563EB", "#FFD43B", "#22C55E", "#9CA3AF", "#EF4444"];
+// Blue, Yellow, Green, Gray, Red
 useEffect(() => {
-  fetch("https://exam-logos-portion-proposals.trycloudflare.com/dashboard")
+  fetch("/chartData.json")
     .then((res) => res.json())
     .then((data) => {
-      console.log("Fetched data:", data);  // 🔍 Add this
-      const withStatus = data.map((item) => ({
-        ...item,
-        status: "Pending",
-        justCompleted: false,
-      }));
-      setAppointmentsData(withStatus);
+      // Pie & Bar Chart
+      const percentage = data.pie.completedPercentage || 0;
+      setCompletedPercentage(percentage);
+      setPieData([
+        { name: "Completed", value: percentage },
+        { name: "Pending", value: 100 - percentage }
+      ]);
+      setBarData(data.bar || []);
+
+      // Doctor Info
+      const doctor = data.doctor || {};
+      setDoctorName(doctor.name || "");
+  
+      setDoctorImage(doctor.image || "images/doctor.png");
     })
-    .catch((error) => console.error("Failed to fetch appointments:", error));
+    .catch((err) => console.error("Failed to fetch chart data:", err));
 }, []);
 
-  const toggleStatusWithDelay = (itemName, currentStatus) => {
-    if (currentStatus === "Pending") {
-      setAppointmentsData((prevData) =>
-        prevData.map((appt) =>
-          appt.name === itemName
-            ? { ...appt, status: "Completed", justCompleted: true }
-            : appt
-        )
-      );
 
-      if (pendingTimeouts[itemName]) clearTimeout(pendingTimeouts[itemName]);
+  useEffect(() => {
+    fetch("/appointments.json")
+      .then((res) => res.json())
+      .then((data) => {
+        const withStatus = data.map((item) => ({
+          ...item,
+          status: "incomplete",
+        }));
+        setAppointmentsData(withStatus);
+      })
+      .catch((error) => console.error("Failed to fetch appointments:", error));
+  }, []);
 
-      const timeout = setTimeout(() => {
-        setAppointmentsData((prevData) =>
-          prevData.map((appt) =>
-            appt.name === itemName ? { ...appt, justCompleted: false } : appt
-          )
-        );
-        setPendingTimeouts((prev) => {
-          const updated = { ...prev };
-          delete updated[itemName];
-          return updated;
-        });
-      }, 3000);
-
-      setPendingTimeouts((prev) => ({ ...prev, [itemName]: timeout }));
-    } else {
-      if (pendingTimeouts[itemName]) clearTimeout(pendingTimeouts[itemName]);
-      setAppointmentsData((prevData) =>
-        prevData.map((appt) =>
-          appt.name === itemName
-            ? { ...appt, status: "Pending", justCompleted: false }
-            : appt
-        )
-      );
-    }
+  const handleInputChange = (field, value) => {
+    setEditedData((prev) => ({ ...prev, [field]: value }));
   };
 
- const handleRowClick = (e, itemName) => {
+  const handleSort = (field) => {
+    const isSameField = sortField === field;
+    const newOrder = isSameField && sortOrder === "asc" ? "desc" : "asc";
+
+    const sorted = [...appointmentsData].sort((a, b) => {
+      let valA = a[field];
+      let valB = b[field];
+
+      if (field === "status") {
+        const getOrderValue = (status) => {
+          if (status?.toLowerCase() === "completed") return 1;
+          if (status?.toLowerCase() === "incomplete") return 2;
+          return 3;
+        };
+        valA = getOrderValue(a.status);
+        valB = getOrderValue(b.status);
+      } else {
+        if (typeof valA === "string") valA = valA.toLowerCase();
+        if (typeof valB === "string") valB = valB.toLowerCase();
+      }
+
+      if (valA < valB) return newOrder === "asc" ? -1 : 1;
+      if (valA > valB) return newOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    setAppointmentsData(sorted);
+    setSortField(field);
+    setSortOrder(newOrder);
+  };
+
+  const getSortIcon = (field) => {
+    const isActive = sortField === field;
+    return (
+      <span className="sort-wrapper-stack">
+        <FontAwesomeIcon
+          icon={faSortUp}
+          className={`sort-icon ${isActive && sortOrder === "asc" ? "sort-up-active" : ""}`}
+        />
+        <FontAwesomeIcon
+          icon={faSortDown}
+          className={`sort-icon ${isActive && sortOrder === "desc" ? "sort-down-active" : ""}`}
+        />
+      </span>
+    );
+  };
+
+  const saveEditedData = (id) => {
+    setAppointmentsData((prev) =>
+      prev.map((appt) => (appt.id === id ? { ...appt, ...editedData } : appt))
+    );
+    setEditingId(null);
+  };
+
+  const handleQuickDate = (option) => {
+    const base = new Date();
+    base.setHours(0, 0, 0, 0);
+
+    let targetDate = null;
+    if (option === "today") targetDate = new Date(base);
+    else if (option === "tomorrow") targetDate = new Date(base.setDate(base.getDate() + 1));
+    else if (option === "yesterday") targetDate = new Date(base.setDate(base.getDate() - 1));
+
+    setSelectedDate(option === "all" ? null : targetDate);
+    setCurrentPage(1);
+    setShowDateDropdown(false);
+    setPlaceholderText(option.charAt(0).toUpperCase() + option.slice(1));
+    setSearch("");
+  };
+
+  const handleDeleteAppointment = (id) => {
+    setAppointmentsData((prevData) => prevData.filter((item) => item.id !== id));
+  };
+
+  const toggleStatusWithDelay = (itemName, currentStatus) => {
+    const newStatus = currentStatus === "incomplete" ? "Completed" : "incomplete";
+    setAppointmentsData((prevData) =>
+      prevData.map((appt) =>
+        appt.name === itemName ? { ...appt, status: newStatus } : appt
+      )
+    );
+  };
+const handleRowClick = (e, itemId) => {
   const isInsideButton = e.target.closest(".intake-btn, .status-text");
   if (!isInsideButton) {
-    const patientData = appointmentsData.find((item) => item.name === itemName);
+    const patientData = appointmentsData.find((item) => item.id === itemId); // ✅ FIXED HERE
     setSelectedPatient(patientData);
     setShowProfileBox(true);
   }
 };
 
 
-  const filteredAppointments = appointmentsData
-    .filter((item) => {
-      const matchesSearch = (item.name || "").toLowerCase().includes(search.toLowerCase());
-      if (selectedDate) {
-        const itemDate = new Date(item.date);
-        const isSameDay = itemDate.toDateString() === selectedDate.toDateString();
-        const isSameMonth =
-          itemDate.getMonth() === selectedDate.getMonth() &&
-          itemDate.getFullYear() === selectedDate.getFullYear();
-        return matchesSearch && (isSameDay || isSameMonth);
-      }
-      return matchesSearch;
-    })
-    .sort((a, b) => {
-      if (a.justCompleted && !b.justCompleted) return -1;
-      if (!a.justCompleted && b.justCompleted) return 1;
-      return a.status === "Completed" ? 1 : -1;
-    });
+  const filteredAppointments = appointmentsData.filter((item) => {
+    const matchesSearch = (item.name || "").toLowerCase().includes(search.toLowerCase());
+    if (selectedDate) {
+      const itemDate = new Date(item.date);
+      const isSameDay = itemDate.toDateString() === selectedDate.toDateString();
+      const isSameMonth =
+        itemDate.getMonth() === selectedDate.getMonth() &&
+        itemDate.getFullYear() === selectedDate.getFullYear();
+      return matchesSearch && (isSameDay || isSameMonth);
+    }
+    return matchesSearch;
+  });
 
-  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
-  const paginatedAppointments = filteredAppointments.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const paginatedAppointments = filteredAppointments;
 
-  const handlePrevious = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
 
   return (
     <>
-      <div className="top-section">
-        <div className="greeting-box">
-          <div className="greeting-text">
-            <div className="goodmorning">Good Morning</div>
-            <div className="doctor-name">Dr. Sarah Johnson</div>
-            <div className="subtitle">
-              Good day! Here’s your dashboard to manage consultations with ease.
-            </div>
-          </div>
-          <img src="images/doctor.png" className="greeting-img" alt="Doctor" />
-        </div>
-
-        <div className="top-right">
-          <div className="profile-box">
-            <img src="images/doctor.png" className="profile-avatar" alt="Profile" />
+    <div className="top">
+    <h1 className="dash-head"> Dashboard</h1>  
+     <div className="notification-bell">
+                  <FontAwesomeIcon icon={faBell} style={{ color: "#2563EB", fontSize: "30px" }} />
+                </div>
+     <div className="profile-box">
+           <img src={doctorImage} className="drprofile-avatar" alt="Profile" />
             <div className="profile-info">
-              <div className="profile-name">Dr. Sarah</div>
-              <div className="profile-role">Cardiologist</div>
+            <div className="profile-name">{doctorName}</div>
+              
               <FontAwesomeIcon icon={faAngleDown} className="vectorlogo" />
             </div>
-          </div>
+          </div></div>
 
-          {paginatedAppointments.length > 0 && (
-            <div className="reminder-box">
-              <div className="reminder-header">
-                <img
-                  src={paginatedAppointments[0].image}
-                  alt={paginatedAppointments[0].name}
-                  className="reminder-avatar"
-                />
-                <div className="reminder-info">
-                  <div className="reminder-name">{paginatedAppointments[0].name}</div>
-                  <div className="reminder-meta">
-                    {paginatedAppointments[0].age} Yrs&nbsp; Male
-                  </div>
-                </div>
-                <div className="reminder-icon">
-                  <FontAwesomeIcon icon={faBell} style={{ color: "#FFD43B", fontSize: "30px" }} />
-                </div>
-              </div>
-              <div className="reminder-datetime-box">
-                <CalendarDays className="reminder-calendar-icon" />
-                <span>
-                  {format(new Date(paginatedAppointments[0].date), "dd MMMM yyyy")},{" "}
-                  {paginatedAppointments[0].time}
-                </span>
-              </div>
-            </div>
-          )}
+    <div className="dashboard-top-card">
+  <div className="top-section">
+    {/* Greeting Card */}
+    <div className="greeting-box">
+      <div className="greeting-text">
+        <div className="greeting">Good Morning</div>
+      <div className="doctor-name">{doctorName}</div>
+        <div className="subtitle">
+          Here is your dashboard to manage consultations with ease.
         </div>
       </div>
+     <img src={doctorImage} alt="Doctor" className="greeting-img" />
+    </div>
 
+    {/* Pie Chart Card */}
+    <div className="chart-card pie">
+ 
+
+ 
+  <div className="chart-wrapper">
+  <ResponsiveContainer width={160} height={160}>
+  <PieChart>
+    <Pie
+      data={pieData}
+      cx="50%"
+      cy="50%"
+      innerRadius={50}
+      outerRadius={70}
+      dataKey="value"
+      startAngle={90}
+      endAngle={-270}
+    >
+      {pieData.map((entry, index) => (
+        <Cell key={index} fill={pieColors[index]} />
+      ))}
+    </Pie>
+  </PieChart>
+</ResponsiveContainer>
+
+<div className="pie-center-label">{completedPercentage}%</div>
+
+
+  
+</div>
+
+
+ <div className="chart-title">Weekly appointments completed</div>
+</div>
+  
+
+
+    {/* Bar Chart Card */}
+    <div className="chart-card bar">
+  
+  
+  <div className="chart-wrapper">
+    <ResponsiveContainer width={200} height={160}>
+  <BarChart data={barData}>
+    <XAxis dataKey="day" hide={true} />
+    <YAxis hide={true} />
+    <Tooltip />
+    <Bar dataKey="hours" radius={[6, 6, 0, 0]}>
+      {barData.map((entry, index) => (
+        <Cell key={index} fill={barColors[index % barColors.length]} />
+      ))}
+    </Bar>
+  </BarChart>
+</ResponsiveContainer>
+
+  </div>
+  <div className="chart-title">Weekly hours completed</div>
+</div>
+
+</div>
+
+</div>
+
+
+<div className="dashboard-bottom-card">
       <div className="section-header">
         <h2>Appointments</h2>
       </div>
@@ -206,7 +332,7 @@ useEffect(() => {
           <Popover>
             <PopoverTrigger asChild>
               <Button className="calendar-input w-[180px] justify-start text-left font-normal text-sm bg-white border border-gray-300 rounded-lg py-2 px-3">
-                <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+                <CalendarIcon className="calender-icon" />
                 {selectedDate instanceof Date ? (
                   format(selectedDate, "PPP")
                 ) : (
@@ -244,107 +370,256 @@ useEffect(() => {
           </Popover>
         </div>
 
+<div className="search-date-container">
+  <div className="search-with-dropdown">
+    <Input
+      type="text"
+      placeholder={placeholderText}
+      value={search}
+      onChange={(e) => {
+        setSearch(e.target.value);
+        setCurrentPage(1);
+      }}
+      className="search-input1"
+    />
+
+    <div
+      className="dropdown-toggle"
+      onClick={() => setShowDateDropdown(!showDateDropdown)}
+    >
+      <FontAwesomeIcon icon={faAngleDown} className="search-drop-icon" />
+    </div>
+
+    {showDateDropdown && (
+      <div className="dropdown-menu">
+        <div onClick={() => handleQuickDate("all")}>All</div>
+        <div onClick={() => handleQuickDate("today")}>Today</div>
+        <div onClick={() => handleQuickDate("tomorrow")}>Tomorrow</div>
+        <div onClick={() => handleQuickDate("yesterday")}>Yesterday</div>
+      </div>
+    )}
+  </div>
+</div>
+
         <Button className="new-appointment">+ New Appointment</Button>
       </div>
 
       <div className="appointments-card">
-        <div className="appointment-headings">
-          <div className="cell time">Time</div>
-          <div className="cell date">Date</div>
-          <div className="cell patient">Patient</div>
-          <div className="cell age">Age</div>
-          <div className="cell disease">Disease</div>
-         
-          <div className="cell action">Action</div>
-           <div className="cell status">Status</div>
-        </div>
+    <div className="appointment-headings">
+  <div className="cell patient cursor-pointer" onClick={() => handleSort("name")}>
 
- {Array.isArray(paginatedAppointments) &&paginatedAppointments.map((item) => (
-  <div
-    key={item._id ||item.name}
-    className={`appointment-row ${activeKey === item.id ? "active" : ""}`}
-    onClick={(e) => handleRowClick(e, item.id)}
-  >
-    <div className="cell time">{item.time || "—"}</div>
-    <div className="cell date">{item.date || "—"}</div>
+    <span className="heading-with-icon">Patient {getSortIcon("patient")}</span>
+  </div>
+  <div className="cell age cursor-pointer" onClick={() => handleSort("age")}>
+    <span className="heading-with-icon">Age {getSortIcon("age")}</span>
+  </div>
+  <div className="cell date cursor-pointer" onClick={() => handleSort("date")}>
+    <span className="heading-with-icon">Date {getSortIcon("date")}</span>
+  </div>
+  <div className="cell time cursor-pointer" onClick={() => handleSort("time")}>
+    <span className="heading-with-icon">Time {getSortIcon("time")}</span>
+  </div>
+  <div className="cell reason cursor-pointer" onClick={() => handleSort("reason")}>
+    <span className="heading-with-icon">Reason {getSortIcon("reason")}</span>
+  </div>
+  <div className="cell doctor cursor-pointer" onClick={() => handleSort("doctor")}>
+    <span className="heading-with-icon">Doctor {getSortIcon("doctor")}</span>
+  </div>
+  
+<div className="cell status cursor-pointer" onClick={() => handleSort("status")}>
+  <span className="heading-with-icon">Status {getSortIcon("status")}</span>
+</div>
 
-    <div className="cell patient">
+
+  <div className="cell action"></div>
+  <div className="cell options"></div>
+</div>
+
+<div className="appointments-card-scroll">
+        {paginatedAppointments.map((item) => (
+          <div
+            key={item._id || item.name}
+            className={`appointment-row ${activeKey === item.id ? "active" : ""}`}
+            onClick={(e) => handleRowClick(e, item.id)}
+          >
+           <div className="cell patient">
+  {editingId === item.id ? (
+    <input
+      value={editedData.name}
+      onChange={(e) => handleInputChange("name", e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.id)}
+      onBlur={() => saveEditedData(item.id)}
+      className="edit-input"
+    />
+  ) : (
+    <>
       {item.image ? (
-        <img src={item.image} alt={item.name || "No Name"} className="avatar" />
+        <img src={item.image} alt={item.name} className="avatar" />
       ) : (
         <FontAwesomeIcon icon={faUser} className="avatar default-avatar" />
       )}
       <span>{item.name || "—"}</span>
-    </div>
+    </>
+  )}
+</div>
 
-    <div className="cell age">{item.age !== undefined ? item.age : "—"}</div>
-    <div className="cell disease">{item.disease || "—"}</div>
+            <div className="cell age">
+  {editingId === item.id ? (
+    <input
+      type="number"
+      value={editedData.age}
+      onChange={(e) => handleInputChange("age", e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.id)}
+      onBlur={() => saveEditedData(item.id)}
+      className="edit-input"
+    />
+  ) : (
+    item.age || "—"
+  )}
+</div>
+<div className="cell date">
+  {editingId === item.id ? (
+    <input
+      type="date"
+      value={editedData.date}
+      onChange={(e) => handleInputChange("date", e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.id)}
+      onBlur={() => saveEditedData(item.id)}
+      className="edit-input"
+    />
+  ) : (
+    item.date || "—"
+  )}
+</div>
+<div className="cell time">
+  {editingId === item.id ? (
+    <input
+      type="time"
+      value={editedData.time}
+      onChange={(e) => handleInputChange("time", e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.id)}
+      onBlur={() => saveEditedData(item.id)}
+      className="edit-input"
+    />
+  ) : (
+    item.time || "—"
+  )}
+</div>
 
-    <div className="cell action">
-      <button
-        className="intake-btn"
-        onClick={(e) => {
-          e.stopPropagation();
-          setSelectedPatient(item);
-          setShowIntake(true);
-        }}
-      >
-        Intake
-      </button>
-    </div>
-
-    <div
-      className="cell status status-text"
-      onClick={(e) => {
-        e.stopPropagation();
-        toggleStatusWithDelay(item.name, item.status);
+   <div className="cell reason">
+  {editingId === item.id ? (
+    <input
+      value={editedData.reason}
+      onChange={(e) =>
+        setEditedData((prev) => ({ ...prev, reason: e.target.value }))
+      }
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          setAppointmentsData((prev) =>
+            prev.map((appt) =>
+              appt.id === item.id ? { ...appt, reason: editedData.reason } : appt
+            )
+          );
+          setEditingId(null); // Exit edit mode
+        }
       }}
-      style={{
-        cursor: "pointer",
-        color: item.status === "Completed" ? "#4781FF" : "black",
-        fontWeight: 500,
+      onBlur={() => {
+        setAppointmentsData((prev) =>
+          prev.map((appt) =>
+            appt.id === item.id ? { ...appt, reason: editedData.reason } : appt
+          )
+        );
+        setEditingId(null); // Exit edit mode
       }}
-    >
-      {item.status || "—"}
-    </div>
-  </div>
-))}
+      className="edit-input"
+    />
+  ) : (
+    item.reason || "—"
+  )}
+</div>
+       
+           
+          
+<div className="cell doctor">
+  {editingId === item.id ? (
+    <input
+      value={editedData.doctor}
+      onChange={(e) => handleInputChange("doctor", e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.id)}
+      onBlur={() => saveEditedData(item.id)}
+      className="edit-input"
+    />
+  ) : (
+    item.doctor || "—"
+  )}
+</div>
 
-      </div>
-
-      <div className="pagination">
-        <button className="page-btn" onClick={handlePrevious} disabled={currentPage === 1}>
-          Previous
-        </button>
-        <div className="pages">
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              className={`page-number ${currentPage === i + 1 ? "active-page" : ""}`}
-              onClick={() => setCurrentPage(i + 1)}
+           
+            <div
+              className="cell status status-text"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleStatusWithDelay(item.name, item.status);
+              }}
+              style={{
+                cursor: "pointer",
+                color: item.status === "Completed" ? "black" :"red",
+                fontWeight: 500,
+              }}
             >
-              {i + 1}
-            </button>
-          ))}
-        </div>
-        <button className="page-btn" onClick={handleNext} disabled={currentPage === totalPages}>
-          Next
-        </button>
-      </div>
-
-      {showIntake && (
-        <IntakePage onClose={() => setShowIntake(false)} patient={selectedPatient} />
-      )}
-     {showProfileBox && selectedPatient && (
-  <ProfileBox
-    patient={selectedPatient}
-    onClose={() => {
-      setShowProfileBox(false);
-      setSelectedPatient(null);
+              {item.status || "—"}
+            </div>
+            <div className="cell action">
+              <button
+                className="intake-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPatient(item);
+                  setShowIntake(true);
+                }}
+              >
+                Intake
+              </button>
+            </div>
+            <div className="cell options">
+              <FontAwesomeIcon
+    icon={faPen}
+    title="Edit"
+    className="icon edit-icon"
+    onClick={(e) => {
+      e.stopPropagation();
+      setEditingId(item.id);
+      setEditedData({ ...item }); // populate data into editable state
     }}
   />
-)}
- 
+  <FontAwesomeIcon
+    icon={faTrash}
+    title="Delete"
+    className="icon delete-icon"
+    onClick={(e) => {
+      e.stopPropagation();
+      handleDeleteAppointment(item.id);
+    }}
+  />
+              <FontAwesomeIcon icon={faAngleDown} title="Done" className="icon done-icon" />
+            </div>
+          </div>
+          
+        ))}</div>
+      </div>
+
+     </div>
+
+      {showIntake && <IntakePage onClose={() => setShowIntake(false)} patient={selectedPatient} />}
+      {showProfileBox && selectedPatient && (
+        <ProfileBox
+          patient={selectedPatient}
+          onClose={() => {
+            setShowProfileBox(false);
+            setSelectedPatient(null);
+          }}
+        />
+      )}
     </>
   );
 }
