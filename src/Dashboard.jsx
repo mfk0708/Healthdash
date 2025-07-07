@@ -215,7 +215,11 @@ const handleRowClick = (e, itemId) => {
 
 
   return (
-    <>
+   
+      <div className="dashboard-layout">
+       <div className="main-content">
+        {!showIntake ? (
+        <>
     <div className="top">
     <h1 className="dash-head"> Dashboard</h1>  
      <div className="notification-bell">
@@ -250,6 +254,7 @@ const handleRowClick = (e, itemId) => {
 
  
   <div className="chart-wrapper">
+   <div className="chart-wrapper1">
   <ResponsiveContainer width={160} height={160}>
   <PieChart>
     <Pie
@@ -271,7 +276,7 @@ const handleRowClick = (e, itemId) => {
 
 <div className="pie-center-label">{completedPercentage}%</div>
 
-
+</div>
   
 </div>
 
@@ -609,8 +614,11 @@ const handleRowClick = (e, itemId) => {
       </div>
 
      </div>
-
-      {showIntake && <IntakePage onClose={() => setShowIntake(false)} patient={selectedPatient} />}
+</>
+  ) : (
+        <IntakePage onClose={() => setShowIntake(false)} patient={selectedPatient} />
+      )}
+    
       {showProfileBox && selectedPatient && (
         <ProfileBox
           patient={selectedPatient}
@@ -620,6 +628,7 @@ const handleRowClick = (e, itemId) => {
           }}
         />
       )}
-    </>
+    
+    </div></div>
   );
 }

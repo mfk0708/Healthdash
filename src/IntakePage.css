@@ -1,190 +1,207 @@
-/* Overlay & Modal */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+
+/* Wrapper contains everything */
+.intake-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding-top:0.3rem;
+  padding-left: 3rem;
+  padding-right: 3rem;
+  height: 95vh;              /* fixed height: full viewport */
+  overflow: hidden;           /* prevent outer scroll */
+}
+
+
+
+/* Heading - stays outside scrollable box */
+.intake-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2563eb;
+  
+}
+
+/* The white box - scrollable only inside */
+.intake-content-scrollable {
+  background-color: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 130px); /* Prevent it from overflowing the screen */
+}
+
+/* Content inside scrollable box */
+.intake-inner-content {
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-right: 0.5rem;
+}
+
+/* Optional: custom scrollbar */
+.intake-inner-content::-webkit-scrollbar {
+  width: 8px;
+}
+.intake-inner-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.top-cards1 {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  height:195px;
+}
+.left-card1 {
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
+  max-width: 320px;
+  background-color: white;
+  border: 1px solid white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;    /* Center content horizontally */
+  text-align: center;
+               /* Space between image, details, and icons */
+}
+
+.patient-img1 {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+.patient-details1 div p {
+  margin: 2px 0;
+  font-size: 0.8rem;
+}
+
+.value-name {
+  color: black;
+  font-size: 0.85rem;
+}
+
+.value-email {
+  font-size: 0.75rem;
+}
+
+.icon-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.phone-icon,
+.message-icon {
+  background-color: #f0f0f0;
+  padding: 0.5rem;
+  border-radius: 50%;
+  color:  #2563EB;
+  font-size: 1rem;
+}
+.right-card1 {
+  flex: 1;
+  background: white;
+  border-radius: 14px;
+  padding: 0.8rem 1rem 0.1rem 1rem;
+  
+  border: 1px solid white;
+  
+}
+.right1{
+ flex: 1;
+ font-size: 0.75rem;
+}
+.right-content-row1 {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem; /* space between columns */
+  align-items: flex-start; /* keep top aligned */
+}
+.value1 {
+  color:#002d1f;
+  margin-left: 4px;
+ 
+}
+.right1 p {
+  margin: 4px 0; /* Reduce vertical space between rows */
+  line-height: 1.3; /* Optional: Tighter line spacing */
+  font-size: 0.75rem;
+   /* Match your style */
+}
+.right1 p::first-line {
+  font-weight: 550; /* Makes the first line (the label) a bit bolder */
+}
+
+/* Insurance Card Section */
+.insurance-card1 {
+  background: linear-gradient(to right, #2563EB, #1E3A8A);
+  color: white;
+  padding:0.5rem 3rem 0.3rem 3rem;
+  border-radius: 12px;
+width: 100%;
+  max-width: 280px;
+  font-size: 0.9rem;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.assurance-heading1 {
+  font-size: 0.75rem;
+
+
+
+}
+h3{
+  font-size: 0.85rem;
+}
+.house-pentagon1 {
+  width:25px;
+  height: 25px;
+  background-color: #10b981; /* Green */
+  clip-path: polygon(
+    0% 30%,    /* bottom-left corner of roof */
+    50% 0%,    /* top peak */
+    100% 30%,  /* bottom-right corner of roof */
+    100% 100%, /* bottom-right of box */
+    0% 100%    /* bottom-left of box */
+  );
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
 }
 
-.modal {
-  background-color: #FFFFFF;
-  border-radius: 20px;
-  padding: 1rem 3rem;
-  width: 750px;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
+.house-pentagon1 span {
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+}
+.expiry1{
+  font-size: 0.75rem;
+
 }
 
-.modal-scroll {
-  max-height: 80vh;           /* Limit scroll area */
-  overflow-y: auto;           /* Enable scroll only here */
-  padding-right: 0.20rem;      /* Give space for scrollbar */
-  margin-right: -0.45rem;      /* Prevent scroll cutting the corner */
-  border-radius: 20px;
-}
-.modal-scroll::-webkit-scrollbar {
-  width: 8px;
-  right: 0; /* ensures it sticks to the edge */
-}
-
-.modal-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.modal-scroll::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
-}
-
-
-/* Header */
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #002d1f;
-}
-
-.close-btn {
-  font-size: 1.10rem;
-  cursor: pointer;
-  margin-right: 20px;
-}
-.tabs {
-  display: flex;
-  gap: 1rem;
-  margin: 1rem 0;
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.tab {
-  color: #888;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 0.4rem 0.75rem;
-  font-weight: 500;
-}
-
-.tab.active {
-  color: #002d1f;
-  font-weight: 700;
-  background: none !important;
-  border-bottom: 2px solid #002d1f;
-}
+/* Info Text */
 
 
 
 
 
-/* Info Grid */
-.info-grid {
-  padding: 0 1rem;
-  column-count: 2;
-  column-gap: 1.65rem;
-}
-
-/* Cards */
-.card1,
-.card2,
-.card3,
-.card4 {
-  background: #fff;
-  padding: 0.6rem 0rem;
-  border-radius: 1rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  break-inside: avoid;
-  border: 1px solid #333;
-  margin-bottom: 1rem;
-  width: 90%;
-  max-width: 280px;
-}
-
-.card2 { padding: 0.9rem 0.0rem; }
-.card4 { padding: 0.9rem 0rem; }
-
-.card h4 {
-  margin-bottom: 0.4rem;
-  font-size: 1rem;
-  color: #002d1f;
-  padding-left: 16px;
-}
-.card1 {
-  position: relative; /* Add this */
-  background: #fff;
-  padding: 0.6rem 0rem;
-  border-radius: 1rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  break-inside: avoid;
-  border: 1px solid #333;
-  margin-bottom: 1rem;
-  width: 90%;
-  max-width: 280px;
-}
 
 
 
 
 
-/* Row for Labels & Values */
-.row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.pnamelabel1,
-.pnamelabel2 {
-  color: #002d1f;
-  font-weight: 500;
-  padding-left: 20px;
-}
-
-.pnamelabel2 {
-  min-width: 110px;
-}
-
-.pnamevalue1,
-.pnamevalue2 {
-  color: #888;
-  padding-left: 10px;
-}
-
-.card1 p:not(:has(.pnamelabel1)),
-.card2 p,
-.card3 p {
-  padding-left: 40px;
-}
-
-.card1 p {
-  margin: 0.7rem 0;
-}
-.display-date {
-  border: 1px solid #ccc;
-  padding: 8px 12px;
-  border-radius: 4px;
-  background: #fff;
-  font-size: 14px;
-}
 
 /* Status Button */
 .status-btn {
@@ -204,9 +221,9 @@
 /* Prescription Section */
 .prescription-heading {
   font-size: 1.2rem;
-  color: #002d1f;
+  color:  #2563EB;
 
-  margin: 1rem 0 0.3rem 0;
+  margin: 1rem 0 1.3rem 0;
   padding-left: 0.2rem;
 }
 
@@ -230,7 +247,7 @@
   margin-bottom: 0.8rem;
 }
 .medicine-row input::placeholder {
-  color:#BEBEBE; /* or any color you want */
+  color:black; /* or any color you want */
   opacity: 1; /* ensures full color visibility */
 }
 
@@ -256,7 +273,7 @@ display: grid;
 }
 
 .medicine-row.header {
-  background-color: #205c45;
+  background-color:  #2563EB;
   color: white;
   font-weight: 600;
  border-radius: 1px;
@@ -273,23 +290,23 @@ display: grid;
   padding: 0.75rem 0.85rem;
   font-size: 0.85rem;
   width: 100%;
-  border: 1px solid #4caf84;
+  border: 1px solid  #bfcbe6;;
   border-radius: 1px;
-  background-color: #4caf84;
-  color: white;
+  background-color:  #bfcbe6;;
+  color:black;
   margin: 0;
-   font-weight: 600;
+   font-weight: 500;
 }
 
 /* Add Button */
 .add-btn {
-  background-color: #4caf84;
+  background-color:   #2563EB;
   color: white;
   border: none;
-  padding: 0.55rem 1rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   width: fit-content;
   align-self: flex-start;
   transition: background-color 0.2s ease;
@@ -297,17 +314,67 @@ display: grid;
 }
 
 .add-btn:hover {
-  background-color: #1b4e3a;
+  background-color:  #2563EB;
 }
+.save1-btn {
+  background-color:#bfcbe6;
+  color: black;
+  border: none;
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  width: fit-content;
+  align-self: flex-start;
+  transition: background-color 0.2s ease;
+  margin-left: 15px;
+}
+
+.add-btn:hover {
+  background-color: #bfcbe6 ;
+}
+.pathology-btn-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.pathology-btn {
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  width: fit-content;
+  transition: background-color 0.2s ease;
+  margin-right: 20px;
+ 
+}
+
+
 .pathology-section {
-  margin: 1.5rem 1rem;
+  margin: 0 1rem;
   background-color: #fff;
   border-radius: 1rem;
   padding: 1rem;
    border: 1px solid #333;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.2rem;
+  
+ 
 }
 
+
+.pathology-heading {
+  font-size: 1.2rem;
+  color:  #2563EB;
+
+ margin-bottom: 0rem;
+  padding-left: 0.2rem;
+}
 
 .pathology-grid {
   display: flex;
@@ -326,6 +393,16 @@ display: grid;
   margin-bottom: 0.5rem;
   color: #002d1f;
   font-weight: 500;
+  
+}
+.file-icon {
+  color: #888;
+  position: absolute;
+ 
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 0.90rem;
 }
 
 .input-group select,
@@ -336,7 +413,8 @@ display: grid;
   font-size: 0.9rem;
   background-color: #FFFFFF;
   color:#002d1f;
-    width: 280px;
+    width: 100%;
+  max-width: 350px;
 }
 
 .input-group select,
@@ -346,7 +424,7 @@ display: grid;
 .remove-button {
   position: absolute;
   top: 4px;
-  left:88%;
+  left:70%;
   background: none;
   color: #002d1f;
   border: none;
@@ -355,320 +433,142 @@ display: grid;
   z-index: 1;
 }
 
-.file-icon {
-  color: #333;
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 0.90rem;
+
+
+.comment-heading {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color:  #2563EB;
 }
-
-
-.followup-box-row {
-  margin: 1.5rem 1rem;
-  padding: 1rem 1.5rem;
-  border: 1px solid #333;
-  border-radius: 10px;
-  background-color: #f9f9f9;
-
+.comment-textarea-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: center; /* centers child horizontally */
+  width: 100%;
+  margin-top: 0.5rem;
 }
 
-.followup-title {
+.comment-textarea {
+  width: 60%;
+  padding: 1.2rem;
   font-size: 1rem;
-  font-weight: 520;
-  color: #002d1f;
-}
-
-/* Toggle */
-.toggle-group {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 36px;
-  height: 18px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  background-color: #ccc;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.4s;
-  border-radius: 20px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 12px;
-  width: 12px;
-  left: 3px;
-  bottom: 3px;
+  border: 1px solid #333;
+  border-radius: 12px;
+  resize: none;
   background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #205c45;
-}
-
-input:checked + .slider:before {
-  transform: translateX(18px);
-}
-
-/* Footer Buttons */
-.footer {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.footer-btn {
-  background-color: white;
-  color: #205c45;
-  padding: 0.4rem 1rem;
-  border: 1px solid #205c45;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 0.85rem;
-   transition: background-color 0.3s ease;
-}
-@media print {
-  .no-print {
-    display: none !important;
-  }
-}
-.footer-btn:hover,
-.footer-btn:active {
-  background-color: #178a52;      /* brighter green on hover/click */
-}
-.confirm-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.confirm-box {
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  min-height: 230px;
   text-align: center;
 }
 
-.confirm-buttons {
-  margin-top: 1rem;
+
+
+.comment-buttons {
   display: flex;
-  justify-content: center;
   gap: 1rem;
+  margin-top: 1rem;
+  margin-left: 65%;
+
 }
 
-.confirm-buttons button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
+.cancel-btn,
+.submit-btn1 {
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
   cursor: pointer;
-  font-weight: bold;
+  border: none;
 }
 
-.confirm-buttons button:first-child {
-  background-color: #205c45;
+.cancel-btn {
+  background-color: white;
+  border: 1px solid #333;
+  color: #333;
+}
+
+.submit-btn1 {
+  background-color: #2563EB;
   color: white;
 }
 
-.confirm-buttons button:last-child {
-  background-color: #ccc;
+@media (max-width: 1024px) {
+  .top-cards1 {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .left-card1,
+  .right-card1,
+  .insurance-card1 {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .comment-textarea {
+    width: 90%;
+  }
+
+  .comment-buttons {
+    margin-left: auto;
+    justify-content: center;
+  }
 }
 
-.popup-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex; justify-content: center; align-items: center;
-  z-index: 999;
+@media (max-width: 768px) {
+  .input-group {
+    width: 100%;
+  }
+
+  .input-group input,
+  .input-group select {
+    width: 100%;
+  }
+
+  .medicine-row {
+    grid-template-columns: 1fr;
+  }
+
+  .prescription-box {
+    margin: 0;
+    padding: 1rem 0.5rem;
+  }
 }
 
-.upcoming-popup {
-  background: #FFFFFF;
-  padding: 1rem 1rem;
-  border-radius: 12px;
-  width: 310px;
-  height:250px;
-  overflow-y: auto;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
-  animation: popupFade 0.3s ease;
-  
+@media (max-width: 480px) {
+  .intake-page-wrapper {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .intake-content-scrollable {
+    padding: 1rem;
+  }
+
+  .prescription-heading,
+  .pathology-heading,
+  .comment-heading {
+    font-size: 1rem;
+  }
+
+  .submit-btn1,
+  .cancel-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+
+  .add-btn,
+  .save1-btn,
+  .status-btn {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .comment-textarea {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
 }
-
-
-
-@keyframes popupFade {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-
-.popup-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-  position: relative;
-}
-
-.popup-left {
-  display: flex;
-  align-items: center;
-}
-
-.popup-patient-img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.popup-patient-details {
-  margin-left: 12px;
-}
-
-.popup-patient-details h4 {
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-.popup-patient-details p {
-  margin: 2px 0;
-  font-size: 0.85rem;
-  color: #333;
-}
-
-.popup-doctor-name {
-  position: absolute;
-  right: 0;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #333;
-  align-self: flex-end;
-  bottom: 45px;
-}
-
-
-.popup-appointments {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-.status-toggle-btn {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none; /* removes border */
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  background: transparent; /* optional: remove button background */
-}
-
-/* Completed style */
-.status-toggle-btn.confirmed {
-  color: #809acf;
-}
-
-/* Not Yet style */
-.status-toggle-btn.not-yet {
-  color: #002d1f;
-}
-
-.popup-input {
-  width: 50%;
-  padding: 0.65rem;
-  font-size: 1rem;
-  border: none; /* fixed from 'border:'none';' */
-  color: #333;
-  z-index: 2;
-  position: relative;
-  background-color: transparent; /* optional: cleaner look */
-}
-
-.datetime-wrapper {
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.popup-input::-webkit-calendar-picker-indicator {
-  opacity: 0;
-  position: absolute;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 3;
-}
-
-.popup-input:focus {
-  outline: none;
-}
-
-.input-overlay {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 30%;
-  height: 100%;
-  cursor: pointer;
-}
-
-
-
-.card-divider {
-  width: 100%;
-  height: 1px;
-  background-color: #ccc;
-  
-}
-.full-width-divider-wrapper {
-  margin-left: -1rem;
-  margin-right: -1rem;
-}
-.popup-input::placeholder {
-  font-size: 13px;
-  color: #888; /* Optional: dimmed placeholder */
-}
-.popup-input {
-  font-size: 15px; /* 👈 Adjust as needed */
+.top-cards1,
+.right-content-row1,
+.pathology-grid {
+  flex-wrap: wrap;
 }

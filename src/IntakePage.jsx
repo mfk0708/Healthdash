@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './IntakePage.css';
-import './DoctorComment.css';
+
 import BetaVersion from './BetaVersion.jsx';
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser,faFolderOpen, faXmark} from "@fortawesome/free-solid-svg-icons";
+import { faUser,faFolderOpen,faBell,faAngleDown, faPhoneVolume, faXmark, faMessage} from "@fortawesome/free-solid-svg-icons";
 
 const IntakePage = ({ onClose, patient }) => {
-  const [activeTab, setActiveTab] = useState('intake');
+ 
   const [medicines, setMedicines] = useState([
     { name: '', dosage: '', duration: '' }
   ]);
@@ -18,10 +19,10 @@ const [customTestName, setCustomTestName] = useState('');
 const [showUpcomingPopup, setShowUpcomingPopup] = useState(false);
 const popupRef = useRef();
 const [appointmentDates, setAppointmentDates] = useState(['', '', '']);
-const [appointmentStatuses, setAppointmentStatuses] = useState(['Not yet', 'Not yet', 'Not yet']);
-const [focusedIndex, setFocusedIndex] = useState(null);
+const [doctor, setDoctor] = useState({ name: '', image: '' });
 const [uploadedFiles, setUploadedFiles] = useState({});
 const [uploadSuccess, setUploadSuccess] = useState({});
+
 const intakeRef = useRef();
 useEffect(() => {
   const handleClickOutsideIntake = (event) => {
@@ -63,53 +64,20 @@ useEffect(() => {
     setMedicines(updated);
   };
 
-  const handlePrint = () => {
-    const printContents = document.getElementById('prescription-print').innerHTML;
-    const newWin = window.open('', '', 'width=800,height=600');
-    newWin.document.write('<html><head><title>Print Prescription</title>');
-    newWin.document.write('<style>body{font-family:Arial;} .medicine-row{display:flex;gap:2rem;margin-bottom:8px;}</style>');
-    newWin.document.write('</head><body>');
-    newWin.document.write(printContents);
-    newWin.document.write('</body></html>');
-    newWin.document.close();
-    newWin.print();
-  };
 
-  const handleSaveClick = () => {
-    setShowConfirm(true);
-  };
-const handleConfirmSave = async () => {
-  setShowConfirm(false);
+  useEffect(() => {
+    fetch('/chartData.json')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.doctor) {
+          setDoctor(data.doctor);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching doctor data:', error);
+      });
+  }, []);
 
-  try {
-    const formData = new FormData();
-
-    formData.append("medicines", JSON.stringify(medicines));
-    formData.append("test", selectedTest);
-    formData.append("testResults", JSON.stringify(testResults));
-    formData.append("appointmentDates", JSON.stringify(appointmentDates));
-    formData.append("appointmentStatuses", JSON.stringify(appointmentStatuses));
-
-    // Append each uploaded file
-    uploadedFiles.forEach((file, index) => {
-      formData.append(`file_${index}`, file);
-    });
-
-    const response = await fetch("https://dummy-server.com/api/save", {
-      method: "POST",
-      body: formData, // no need for headers like Content-Type; it’s handled automatically
-    });
-
-    alert(response.ok ? "Prescription saved successfully!" : "Error saving prescription.");
-  } catch {
-    alert("Server error.");
-  }
-};
-
-  
-  const handleCancelSave = () => {
-    setShowConfirm(false);
-  };
   const [comment, setComment] = useState('');
 const handleCommentSubmit = async () => {
   if (!comment.trim()) {
@@ -148,84 +116,141 @@ const handleDateChange = (index, value) => {
   updated[index] = value;
   setAppointmentDates(updated);
 };
+const formatPhone = (phone) => {
+  const cleaned = phone.replace(/\D/g, ''); // Remove all non-digits
+  if (!cleaned.startsWith('91')) {
+    return '91' + cleaned; // Add country code if missing
+  }
+  return cleaned;
+};
+ 
+const handlePrescriptionSave = async () => {
+  try {
+    const response = await fetch("https://your-server.com/api/prescription", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        patientId: patient?.id || null,
+        medicines: medicines,
+      }),
+    });
+
+    if (response.ok) {
+      alert("Prescription saved successfully!");
+    } else {
+      alert("Failed to save prescription.");
+    }
+  } catch (error) {
+    alert("Error saving prescription.");
+  }
+};
+const handlePathologySave = async () => {
+  try {
+    const formData = new FormData();
+
+    formData.append("patientId", patient?.id || null);
+    formData.append("testResults", JSON.stringify(testResults));
+
+    Object.entries(uploadedFiles).forEach(([testName, file]) => {
+      formData.append(testName, file); // ensure `file` is a File object
+    });
+
+    const response = await fetch("https://your-server.com/api/pathology", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      alert("Pathology data saved successfully!");
+    } else {
+      alert("Failed to save pathology.");
+    }
+  } catch (error) {
+    alert("Error saving pathology data.");
+  }
+};
+
+
 
   return (
-    <div className="overlay">
-     <div className="intake-box" ref={intakeRef}>
-      <div className="modal">
-        <div className="modal-scroll">
-          <div className="modal-header">
-            <h2>Appointment Intake</h2>
-            <span className="close-btn" onClick={onClose}> <FontAwesomeIcon icon={faXmark} /></span>
-          </div>
+    
+<div className="intake-page-wrapper">
 
-          {/* Tabs */}
-          <div className="tabs">
-            <span
-              className={`tab ${activeTab === 'intake' ? 'active' : ''}`}
-              onClick={() => setActiveTab('intake')}
-            >
-              Intake Info
-            </span>
-            <span
-              className={`tab ${activeTab === 'beta' ? 'active' : ''}`}
-              onClick={() => setActiveTab('beta')}
-            >
-              Beta Version
-            </span>
-            <span
-              className={`tab ${activeTab === 'comments' ? 'active' : ''}`}
-              onClick={() => setActiveTab('comments')}
-            >
-              Doctor’s Comment
-            </span>
-          </div>
-
-          {/* Intake Info Section */}
-          {activeTab === 'intake' && (
-            <>
-              <div className="info-grid">
-                <div className="card card1">
-                  <h4>Appointment Summary</h4>
-                  <p className="name11">
-                    <span className="pnamelabel1">Patient Name&nbsp;</span>
-                    <span className="pnamevalue1">{patient?.name || 'Unknown'}</span>
-                  </p>
-                  <p>APTNO{patient?.id || 'N/A'}</p>
-                  <p>{patient?.date || 'N/A'}</p>
-                  <button className="status-btn" onClick={() => setShowUpcomingPopup(true)}>Upcoming</button>
-
-                </div>
-                <div className="card card3">
-  <h4>Doctor Info</h4>
-  <p>{patient?.doctor || "not assigned"}</p>
-  <p>{patient?.specialization || "not available"}</p>
+  <div className='top'>
+    <h2 className='intake-title'>Intake Form</h2>
+   
+  <div className="notification-bell">
+                    <FontAwesomeIcon icon={faBell} style={{ color: "#2563EB", fontSize: "30px" }} />
+                  </div> <div className="profile-box">
+      <img
+        src={doctor.image}
+        className="drprofile-avatar"
+        alt="Profile"
+      />
+      <div className="profile-info">
+        <div className="profile-name">{doctor.name}</div>
+        <FontAwesomeIcon icon={faAngleDown} className="vectorlogo" />
+      </div>
+    </div></div>
+                   
+                               <div className="top-cards1">
+        {/* Left Card */}
+        <div className="left-card1">
+         <div class="patient-container1">
+        <img src={patient.image} alt="Patient" className="patient-img1" />
+           
+            </div>
+           
+          <div className="patient-details1">
+         <div>
+             <p> <span className="value-name">{patient.name}</span></p>
+<p><span className="value-email">{patient.email} </span></p>
+<div className="icon-row">
+  <a href={`tel:${patient.phone}`}>
+    <FontAwesomeIcon icon={faPhoneVolume} className="phone-icon" />
+  </a>
+  <a
+    href={`https://wa.me/${formatPhone(patient.phone)}`}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <FontAwesomeIcon icon={faMessage} className="message-icon" />
+  </a>
 </div>
 
-                <div className="card card2">
-                  <h4>Reason for visit</h4>
-                 
-                  <hr className="card-divider" />
-                  <p>{patient?.reason || 'No reason provided'}</p>
-                </div>
-                <div className="card card4">
-                  <h4>Vital signs</h4>
-                   
-                  <hr className="card-divider" />
-                  <p className="row">
-                    <span className="pnamelabel2">Blood Pressure&nbsp;</span>
-                    <span className="pnamevalue2">{patient?.bloodPressure || 'N/A'}</span>
-                  </p>
-                  <p className="row">
-                    <span className="pnamelabel2">Temperature&nbsp;</span>
-                    <span className="pnamevalue2">{patient?.temperature || 'N/A'}</span>
-                  </p>
-                  <p className="row">
-                    <span className="pnamelabel2">Pulse&nbsp;</span>
-                    <span className="pnamevalue2">{patient?.pulse || 'N/A'}</span>
-                  </p></div>
-                </div>
-              
+ </div>
+          </div>
+        </div>
+
+        {/* Right Card */}
+        <div className="right-card1">
+          <div className="right-content-row1">
+       <div className='right1'>
+        <p>Date of birth:<br /><span className="value1">{patient.birth}</span></p>
+              <p>Martial Status:<br /><span className="value">{patient.martial}</span></p>
+          <p>Phone:<br /><span className="value1">{patient.phone}</span></p>
+
+      <p>Address:<br /><span className="value1">{patient.address}, {patient.city}</span></p>
+    <p>Registered Date<br /><span className="value1">{patient.registered}</span></p>
+</div>
+          <div className="insurance-card1">
+           <div className="house-pentagon1"><span>H</span></div>
+            <p className="assurance-heading1"> Assurance number</p>
+            <h3>{patient.assuranceNumber}</h3>
+            <p className='expiry1'>EXPIRY DATE</p>
+            <p>{patient.expiryDate}</p>
+      
+        </div></div>
+      </div></div>
+
+
+  <div className="intake-content-scrollable" ref={intakeRef}>
+  <div className="intake-inner-content">
+    {/* Put everything else inside here - tabs, intake info, etc */}
+ <BetaVersion />
+
 
               {/* Prescription Section */}
               <div className="print-section" id="prescription-print">
@@ -287,12 +312,17 @@ const handleDateChange = (index, value) => {
                       </div>
                     ))}
                   </div>
+                  <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
                   <button className="add-btn no-print" onClick={handleAddMedicine}>+ Add</button>
+                 <button className="save1-btn" onClick={handlePrescriptionSave}>Save Prescription</button>
+</div>
                 </div>
               </div>
 
             {/* Pathology Section */}
+ <h4 className="pathology-heading">Pathology</h4>
 <div className="pathology-section">
+
   <div className="pathology-grid">
 
     {/* Dropdown to Select Test */}
@@ -336,7 +366,9 @@ const handleDateChange = (index, value) => {
         <option value="Other">Other</option>
 
       </select>
+      
        {selectedTest === 'Other' && (
+       
   <input
     type="text"
     placeholder="Enter custom test name"
@@ -427,17 +459,17 @@ const handleDateChange = (index, value) => {
       style={{ display: "none" }}
     onChange={(e) => {
   if (selectedTest && e.target.files.length > 0) {
-    const fileName = e.target.files[0].name;
+   
+const file = e.target.files[0];
+setUploadedFiles((prev) => ({
+  ...prev,
+  [selectedTest]: file, // ✅ Save actual File object
+}));
 
-    setUploadedFiles((prev) => ({
-      ...prev,
-      [selectedTest]: fileName,
-    }));
-
-    setUploadSuccess((prev) => ({
-      ...prev,
-      [selectedTest]: true,
-    }));
+setUploadSuccess((prev) => ({
+  ...prev,
+  [selectedTest]: true,
+}));
 
     setTimeout(() => {
       setUploadSuccess((prev) => ({
@@ -455,9 +487,10 @@ const handleDateChange = (index, value) => {
     <label
       htmlFor="file-upload"
       style={{
-        position: "absolute",
-        right: "8px",
+        position: "relative",
+        right: "25px",
         cursor: "pointer",
+        transform: "translateY(-50%)",
         fontSize: "1rem",
         color: "#007bff",
       }}
@@ -465,10 +498,12 @@ const handleDateChange = (index, value) => {
     >
      <FontAwesomeIcon icon={faFolderOpen} className='file-icon' />
     </label>
+    
   </div>
 {selectedTest && uploadSuccess[selectedTest] && (
   <p style={{ fontSize: "0.8rem", color: "green", marginTop: "4px" }}>
-    {uploadedFiles[selectedTest]} uploaded successfully!
+   {uploadedFiles[test]?.name} uploaded successfully!
+
   </p>
 )}
 
@@ -530,15 +565,16 @@ const handleDateChange = (index, value) => {
             style={{ display: "none" }}
             onChange={(e) => {
               if (e.target.files.length > 0) {
-                const fileName = e.target.files[0].name;
-                setUploadedFiles((prev) => ({
-                  ...prev,
-                  [test]: fileName,
-                }));
-                setUploadSuccess((prev) => ({
-                  ...prev,
-                  [test]: true,
-                }));
+                const file = e.target.files[0];
+setUploadedFiles((prev) => ({
+  ...prev,
+  [test]: file, 
+}));
+
+setUploadSuccess((prev) => ({
+  ...prev,
+  [test]: true,
+}));
                 setTimeout(() => {
                   setUploadSuccess((prev) => ({
                     ...prev,
@@ -568,83 +604,36 @@ const handleDateChange = (index, value) => {
         {/* Success Message */}
         {uploadSuccess[test] && (
           <p style={{ fontSize: "0.8rem", color: "green", marginTop: "4px" }}>
-            {uploadedFiles[test]} uploaded successfully!
+           {uploadedFiles[test]?.name} uploaded successfully!
+
           </p>
         )}
       </div>
+     
+
     </div>
   ))}
-
-  </div>
+  <div className="pathology-btn-wrapper">
+ <button className="pathology-btn" onClick={handlePathologySave}>Save Pathology</button>
+  </div></div>
 </div>
-
-       {/* Follow-up Section */}
-              <div className="followup-box-row">
-                <label className="followup-title">Follow-up Appointment</label>
-                <div className="toggle-group">
-                  <label>Reminder</label>
-                  <label className="switch">
-                    <input type="checkbox" />
-                    <span className="slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="footer">
-                <button className="footer-btn" onClick={handleSaveClick}>Save</button>
-                <button className="footer-btn" onClick={handlePrint}>Print Prescription</button>
-              </div>
-            </>
-          )}
-
-          {/* Beta Version Section */}
-  {activeTab === 'beta' && (
-  <div className="beta-section beta-white-bg">
-    <BetaVersion
-      patient={patient}
-         onCancel={() => console.log('Voice cancelled')}
-      onSubmit={(data) =>
-        console.log('Voice submitted:', data.transcript, 'Rating:', data.rating)
-      }
-    />
-  </div>
-)}
-
-      
-{activeTab === 'comments' && (
-  <div className="doctor-comment-section">
-  {patient?.doctorImage ? (
-    <img
-      src={patient.doctorImage}
-      alt={patient?.doctor || "Doctor Avatar"}
-      className="doctorAvatar1"
-    />
-  ) : (
-    <FontAwesomeIcon
-      icon={faUser}
-      className="doctorAvatar1 default-avatar"
-    />
-  )}
-
-    <h3 className="comment-heading">Comments</h3>
+ <h3 className="comment-heading"> Doctor's Comments</h3>
+ <div className="comment-textarea-container">
    <textarea
   placeholder="Write a Comment..."
   className="comment-textarea"
   value={comment}
   onChange={(e) => setComment(e.target.value)}
-/>
+/></div>
 
     <div className="comment-buttons">
       <button className="cancel-btn" onClick={handleClearComment}>Cancel</button>
-      <button className="submit-btn" onClick={handleCommentSubmit}>Submit</button>
+      <button className="submit-btn1" onClick={handleCommentSubmit}>Submit</button>
     </div>
-  </div>
-)}
+       {/* Follow-up Section */}
+         
 
-        
-
-          {/* Confirmation Modal */}
+  {/* Confirmation Modal */}
           {showConfirm && (
             <div className="confirm-overlay">
               <div className="confirm-box">
@@ -658,103 +647,10 @@ const handleDateChange = (index, value) => {
           )}
         
   
-{showUpcomingPopup && (
-  <div className="popup-overlay">
-    <div className="upcoming-popup" ref={popupRef}>
-      <div className="popup-header-row">
-       <div className="popup-doctor-name">
-          <p>{patient?.doctor || "Dr. Robert"}</p>
+
+</div></div>
         </div>
-        <div className="popup-left">
-          <div>
-            {patient?.image ? (
-          <img src={patient.image} className='popup-patient-img'
-            alt="Patient" />
-            ):( <FontAwesomeIcon icon={faUser} classname="popup-patient-img"/>
-            )}
-            </div>
-          
-          <div className="popup-patient-details">
-            <h4>{patient?.name || "Arthur"}</h4>
-            <p>{patient?.age || "30"} • {patient?.gender || "Male"}</p>
-          </div>
-        </div>
-       
-      </div>
-
-      <div className="full-width-divider-wrapper">
-        <hr className="break" /></div>
-
-
-<div className="popup-appointments">
-  {[0, 1, 2].map((_, index) => {
-    const dateTime = appointmentDates[index];
-    const isFocused = focusedIndex === index;
-    const formattedValue = dateTime
-      ? new Date(dateTime).toLocaleDateString("en-US", {
-  month: "long",  // shows full month name
-  day: "numeric",
-  year: "numeric",
-}) +
-        " at " +
-        new Date(dateTime).toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-           hour12: true,
-        })
-      : "";
-
-    return (
-      <div
-        className="datetime-wrapper"
-        key={index}
-        style={{ display: "flex", alignItems: "center", gap: "8px" }}
-      >
-        <input
-          type={isFocused ? "datetime-local" : "text"}
-          className="popup-input"
-          value={isFocused ? dateTime : formattedValue}
-          onFocus={(e) => {
-            setFocusedIndex(index); // Track focus
-            setTimeout(() => {
-              e.target.type = "datetime-local";
-              e.target.showPicker?.();
-            }, 0);
-          }}
-          onBlur={() => setFocusedIndex(null)} // Remove focus tracking
-          placeholder="Enter appointment date"
-          onChange={(e) => handleDateChange(index, e.target.value)}
-          style={{ flex: 1 }}
-        />
-
-        <button
-          className={`status-toggle-btn ${
-            appointmentStatuses[index] === "Confirmed" ? "confirmed" : "not-yet"
-          }`}
-          onClick={() => {
-            const updated = [...appointmentStatuses];
-            updated[index] =
-              updated[index] === "Confirmed" ? "Not Yet" : "Confirmed";
-            setAppointmentStatuses(updated);
-          }}
-        >
-          {appointmentStatuses[index]}
-        </button>
-      </div>
-    );
-  })}
-</div>
-
-
-
-
-    </div>
-  </div>
-)}
-</div>
-        </div>
-      </div>
-    </div>
+      
   );
 };
 
