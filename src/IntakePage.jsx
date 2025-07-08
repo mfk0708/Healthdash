@@ -9,7 +9,7 @@ import { faUser,faFolderOpen,faBell,faAngleDown, faPhoneVolume, faXmark, faMessa
 const IntakePage = ({ onClose, patient }) => {
  
   const [medicines, setMedicines] = useState([
-    { name: '', dosage: '', duration: '' }
+    { name: '', dosage: '', duration: '', frequency: '', notes: '' }
   ]);
   const [selectedTest, setSelectedTest] = useState('');
   const [selectedTests, setSelectedTests] = useState([]);
@@ -87,12 +87,12 @@ const handleCommentSubmit = async () => {
 
 
   try {
-    const response = await fetch("https://dummy-server.com/api/comment", {
+    const response = await fetch("https://bands-owners-tall-fork.trycloudflare.com", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        patientId: patient?.id || null,
-        doctor: patient?.doctor || "Unknown",
+        patientId: patient?.patient_id || null,
+        doctor: patient?.doctor_name || "Unknown",
         comment: comment
       })
     });
@@ -123,41 +123,56 @@ const formatPhone = (phone) => {
   }
   return cleaned;
 };
- 
-const handlePrescriptionSave = async () => {
+ const handlePrescriptionSave = async () => {
+  const doctorId = localStorage.getItem("doctor_id"); // Or however you manage it
+
   try {
-    const response = await fetch("https://your-server.com/api/prescription", {
+    const response = await fetch("https://bands-owners-tall-fork.trycloudflare.com/prescription", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        patientId: patient?.id || null,
+        patient_id: patient?.patient_id || null,
+        doctor_id: doctorId || "doc123", // Replace with actual doctor ID
         medicines: medicines,
       }),
     });
 
+    const resultText = await response.text();
+
     if (response.ok) {
       alert("Prescription saved successfully!");
     } else {
-      alert("Failed to save prescription.");
+      console.error("Raw error response:", resultText);
+      alert("Failed to save prescription:\n" + resultText);
     }
   } catch (error) {
+    console.error("Network error:", error);
     alert("Error saving prescription.");
   }
 };
+
+
 const handlePathologySave = async () => {
   try {
     const formData = new FormData();
 
-    formData.append("patientId", patient?.id || null);
-    formData.append("testResults", JSON.stringify(testResults));
+    formData.append("patientId", patient?.patient_id || null);
 
-    Object.entries(uploadedFiles).forEach(([testName, file]) => {
-      formData.append(testName, file); // ensure `file` is a File object
+    selectedTests.forEach((testName, index) => {
+      const result = testResults[testName] || '';
+      const file = uploadedFiles[testName] || null;
+
+      formData.append(`tests[${index}][testName]`, testName);
+      formData.append(`tests[${index}][result]`, result);
+
+      if (file) {
+        formData.append(`tests[${index}][file]`, file);
+      }
     });
 
-    const response = await fetch("https://your-server.com/api/pathology", {
+    const response = await fetch("https://bands-owners-tall-fork.trycloudflare.com/pathology", {
       method: "POST",
       body: formData,
     });
@@ -194,56 +209,77 @@ const handlePathologySave = async () => {
         <FontAwesomeIcon icon={faAngleDown} className="vectorlogo" />
       </div>
     </div></div>
-                   
-                               <div className="top-cards1">
-        {/* Left Card */}
-        <div className="left-card1">
-         <div class="patient-container1">
-        <img src={patient.image} alt="Patient" className="patient-img1" />
-           
-            </div>
-           
-          <div className="patient-details1">
-         <div>
-             <p> <span className="value-name">{patient.name}</span></p>
-<p><span className="value-email">{patient.email} </span></p>
-<div className="icon-row">
-  <a href={`tel:${patient.phone}`}>
-    <FontAwesomeIcon icon={faPhoneVolume} className="phone-icon" />
-  </a>
-  <a
-    href={`https://wa.me/${formatPhone(patient.phone)}`}
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <FontAwesomeIcon icon={faMessage} className="message-icon" />
-  </a>
-</div>
-
- </div>
+    <div className="top-cards1">
+  {/* Left Card */}
+  <div className="left-card1">
+    <div>
+      {patient && (patient.patient_name || patient.email || patient.phone) ? (
+        <>
+          <div className="patient-container1">
+            {patient.image ? (
+              <img src={patient.image} alt="Patient" className="patient-img1" />
+            ) : (
+              <FontAwesomeIcon icon={faUser} className="patient-img1" style={{ color: "grey" }} />
+            )}
           </div>
-        </div>
 
-        {/* Right Card */}
-        <div className="right-card1">
-          <div className="right-content-row1">
-       <div className='right1'>
-        <p>Date of birth:<br /><span className="value1">{patient.birth}</span></p>
-              <p>Martial Status:<br /><span className="value">{patient.martial}</span></p>
-          <p>Phone:<br /><span className="value1">{patient.phone}</span></p>
+          <div className="patient-details1">
+            {patient.patient_name && (
+              <p><span className="value-name">{patient.patient_name}</span></p>
+            )}
+            {patient.email && (
+              <p><span className="value-email">{patient.email}</span></p>
+            )}
+            {patient.phone && patient.phone.trim() !== "" && (
+              <div className="icon-row">
+                <a href={`tel:${patient.phone}`}>
+                  <FontAwesomeIcon icon={faPhoneVolume} className="phone-icon" />
+                </a>
+                <a
+                  href={`https://wa.me/${formatPhone(patient.phone)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FontAwesomeIcon icon={faMessage} className="message-icon" />
+                </a>
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <div>No patient data available</div>
+      )}
+    </div>
+  </div>
 
-      <p>Address:<br /><span className="value1">{patient.address}, {patient.city}</span></p>
-    <p>Registered Date<br /><span className="value1">{patient.registered}</span></p>
-</div>
+  {/* Right Card */}
+  <div className="right-card1">
+    <div className="right-content-row1">
+      {patient ? (
+        <>
+          <div className='right1'>
+            <p>Date of birth:<br /><span className="value1">{patient.birth}</span></p>
+            <p>Martial Status:<br /><span className="value">{patient.martial}</span></p>
+            <p>Phone:<br /><span className="value1">{patient.phone}</span></p>
+            <p>Address:<br /><span className="value1">{patient.address}, {patient.city}</span></p>
+            <p>Registered Date<br /><span className="value1">{patient.registered}</span></p>
+          </div>
+
           <div className="insurance-card1">
-           <div className="house-pentagon1"><span>H</span></div>
-            <p className="assurance-heading1"> Assurance number</p>
+            <div className="house-pentagon1"><span>H</span></div>
+            <p className="assurance-heading1">Assurance number</p>
             <h3>{patient.assuranceNumber}</h3>
             <p className='expiry1'>EXPIRY DATE</p>
             <p>{patient.expiryDate}</p>
-      
-        </div></div>
-      </div></div>
+          </div>
+        </>
+      ) : (
+        <div className="right1">No detailed patient info</div>
+      )}
+    </div>
+  </div>
+</div>
+ 
 
 
   <div className="intake-content-scrollable" ref={intakeRef}>
@@ -500,13 +536,12 @@ setUploadSuccess((prev) => ({
     </label>
     
   </div>
+
 {selectedTest && uploadSuccess[selectedTest] && (
   <p style={{ fontSize: "0.8rem", color: "green", marginTop: "4px" }}>
-   {uploadedFiles[test]?.name} uploaded successfully!
-
+    {uploadedFiles[selectedTest]?.name} uploaded successfully!
   </p>
 )}
-
 
 </div>
 
@@ -545,7 +580,7 @@ setUploadSuccess((prev) => ({
 
       {/* Input + Upload Icon in one row */}
       <div style={{ position: "relative", display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
+        <div style={{  position: "relative", display: "flex", alignItems: "center" }}>
           <input
             type="text"
             id={`result-${index}`}
@@ -559,38 +594,47 @@ setUploadSuccess((prev) => ({
           />
 
           {/* Hidden File Input */}
-          <input
-            type="file"
-            id={`file-upload-${index}`}
-            style={{ display: "none" }}
-            onChange={(e) => {
-              if (e.target.files.length > 0) {
-                const file = e.target.files[0];
-setUploadedFiles((prev) => ({
-  ...prev,
-  [test]: file, 
-}));
+       <input
+  type="file"
+  id={`file-upload-${index}`}
+  style={{ display: "none" }}
+  onChange={(e) => {
+    try {
+      console.log("File change triggered");
+      if (e.target.files.length > 0) {
+        const file = e.target.files[0];
+        console.log("Selected file:", file);
 
-setUploadSuccess((prev) => ({
-  ...prev,
-  [test]: true,
-}));
-                setTimeout(() => {
-                  setUploadSuccess((prev) => ({
-                    ...prev,
-                    [test]: false,
-                  }));
-                }, 3000);
-              }
-            }}
-          />
+        setUploadedFiles((prev) => ({
+          ...prev,
+          [test]: file,
+        }));
+
+        setUploadSuccess((prev) => ({
+          ...prev,
+          [test]: true,
+        }));
+
+        setTimeout(() => {
+          setUploadSuccess((prev) => ({
+            ...prev,
+            [test]: false,
+          }));
+        }, 3000);
+      }
+    } catch (error) {
+      console.error("Error in file upload onChange:", error);
+      alert("Something went wrong in file selection!");
+    }
+  }}
+/>
 
           {/* Upload Icon */}
           <label
             htmlFor={`file-upload-${index}`}
             style={{
-              position: "absolute",
-              right: "8px",
+              position: "relative",
+              right: "25px",
               cursor: "pointer",
               fontSize: "1rem",
               color: "#007bff",
@@ -614,7 +658,14 @@ setUploadSuccess((prev) => ({
     </div>
   ))}
   <div className="pathology-btn-wrapper">
- <button className="pathology-btn" onClick={handlePathologySave}>Save Pathology</button>
+ <button
+  type="button"  // ✅ Required to prevent reload
+  className="pathology-btn"
+  onClick={handlePathologySave}
+>
+  Save Pathology
+</button>
+
   </div></div>
 </div>
  <h3 className="comment-heading"> Doctor's Comments</h3>

@@ -90,7 +90,7 @@ useEffect(() => {
 
 
   useEffect(() => {
-    fetch("/appointments.json")
+    fetch("https://bands-owners-tall-fork.trycloudflare.com/dashboard")
       .then((res) => res.json())
       .then((data) => {
         const withStatus = data.map((item) => ({
@@ -153,9 +153,9 @@ useEffect(() => {
     );
   };
 
-  const saveEditedData = (id) => {
+  const saveEditedData = (patient_id) => {
     setAppointmentsData((prev) =>
-      prev.map((appt) => (appt.id === id ? { ...appt, ...editedData } : appt))
+      prev.map((appt) => (appt.id === patient_id ? { ...appt, ...editedData } : appt))
     );
     setEditingId(null);
   };
@@ -176,8 +176,8 @@ useEffect(() => {
     setSearch("");
   };
 
-  const handleDeleteAppointment = (id) => {
-    setAppointmentsData((prevData) => prevData.filter((item) => item.id !== id));
+  const handleDeleteAppointment = (patient_id) => {
+    setAppointmentsData((prevData) => prevData.filter((item) => item.patient_id !== patient_id));
   };
 
   const toggleStatusWithDelay = (itemName, currentStatus) => {
@@ -191,7 +191,7 @@ useEffect(() => {
 const handleRowClick = (e, itemId) => {
   const isInsideButton = e.target.closest(".intake-btn, .status-text");
   if (!isInsideButton) {
-    const patientData = appointmentsData.find((item) => item.id === itemId); // ✅ FIXED HERE
+    const patientData = appointmentsData.find((item) => item.patient_id === itemId); // ✅ FIXED HERE
     setSelectedPatient(patientData);
     setShowProfileBox(true);
   }
@@ -443,53 +443,53 @@ const handleRowClick = (e, itemId) => {
 <div className="appointments-card-scroll">
         {paginatedAppointments.map((item) => (
           <div
-            key={item._id || item.name}
-            className={`appointment-row ${activeKey === item.id ? "active" : ""}`}
-            onClick={(e) => handleRowClick(e, item.id)}
+            key={item.patient_id || item.patient_name}
+            className={`appointment-row ${activeKey === item.patient_id ? "active" : ""}`}
+            onClick={(e) => handleRowClick(e, item.patient_id)}
           >
            <div className="cell patient">
-  {editingId === item.id ? (
+  {editingId === item.patient_id ? (
     <input
       value={editedData.name}
       onChange={(e) => handleInputChange("name", e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.id)}
-      onBlur={() => saveEditedData(item.id)}
+      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
+      onBlur={() => saveEditedData(item.patient_id)}
       className="edit-input"
     />
   ) : (
     <>
       {item.image ? (
-        <img src={item.image} alt={item.name} className="avatar" />
+        <img src={item.patient_image} alt={item.patient_name} className="avatar" />
       ) : (
         <FontAwesomeIcon icon={faUser} className="avatar default-avatar" />
       )}
-      <span>{item.name || "—"}</span>
+      <span>{item.patient_name || "—"}</span>
     </>
   )}
 </div>
 
             <div className="cell age">
-  {editingId === item.id ? (
+  {editingId === item.patient_id ? (
     <input
       type="number"
-      value={editedData.age}
+      value={editedData.patient_age}
       onChange={(e) => handleInputChange("age", e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.id)}
-      onBlur={() => saveEditedData(item.id)}
+      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
+      onBlur={() => saveEditedData(item.patient_id)}
       className="edit-input"
     />
   ) : (
-    item.age || "—"
+    item.patient_age || "—"
   )}
 </div>
 <div className="cell date">
-  {editingId === item.id ? (
+  {editingId === item.patient_id ? (
     <input
       type="date"
       value={editedData.date}
       onChange={(e) => handleInputChange("date", e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.id)}
-      onBlur={() => saveEditedData(item.id)}
+      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
+      onBlur={() => saveEditedData(item.patient_id)}
       className="edit-input"
     />
   ) : (
@@ -497,13 +497,13 @@ const handleRowClick = (e, itemId) => {
   )}
 </div>
 <div className="cell time">
-  {editingId === item.id ? (
+  {editingId === item.patient_id ? (
     <input
       type="time"
       value={editedData.time}
       onChange={(e) => handleInputChange("time", e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.id)}
-      onBlur={() => saveEditedData(item.id)}
+      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
+      onBlur={() => saveEditedData(item.patient_id)}
       className="edit-input"
     />
   ) : (
@@ -512,17 +512,17 @@ const handleRowClick = (e, itemId) => {
 </div>
 
    <div className="cell reason">
-  {editingId === item.id ? (
+  {editingId === item.patient_id ? (
     <input
-      value={editedData.reason}
+      value={editedData.patient_disease}
       onChange={(e) =>
-        setEditedData((prev) => ({ ...prev, reason: e.target.value }))
+        setEditedData((prev) => ({ ...prev, disease: e.target.value }))
       }
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           setAppointmentsData((prev) =>
             prev.map((appt) =>
-              appt.id === item.id ? { ...appt, reason: editedData.reason } : appt
+              appt.id === item.patient_id ? { ...appt, disease: editedData.disease } : appt
             )
           );
           setEditingId(null); // Exit edit mode
@@ -531,7 +531,7 @@ const handleRowClick = (e, itemId) => {
       onBlur={() => {
         setAppointmentsData((prev) =>
           prev.map((appt) =>
-            appt.id === item.id ? { ...appt, reason: editedData.reason } : appt
+            appt.id === item.patient_id ? { ...appt, disease: editedData.disease } : appt
           )
         );
         setEditingId(null); // Exit edit mode
@@ -539,23 +539,23 @@ const handleRowClick = (e, itemId) => {
       className="edit-input"
     />
   ) : (
-    item.reason || "—"
+    item.disease || "—"
   )}
 </div>
        
            
           
 <div className="cell doctor">
-  {editingId === item.id ? (
+  {editingId === item.patient_id ? (
     <input
-      value={editedData.doctor}
+      value={editedData.doctor_name}
       onChange={(e) => handleInputChange("doctor", e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.id)}
-      onBlur={() => saveEditedData(item.id)}
+      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
+      onBlur={() => saveEditedData(item.patient_id)}
       className="edit-input"
     />
   ) : (
-    item.doctor || "—"
+    item.doctor_name || "—"
   )}
 </div>
 
@@ -564,7 +564,7 @@ const handleRowClick = (e, itemId) => {
               className="cell status status-text"
               onClick={(e) => {
                 e.stopPropagation();
-                toggleStatusWithDelay(item.name, item.status);
+                toggleStatusWithDelay(item.patient_name, item.status);
               }}
               style={{
                 cursor: "pointer",
@@ -593,7 +593,7 @@ const handleRowClick = (e, itemId) => {
     className="icon edit-icon"
     onClick={(e) => {
       e.stopPropagation();
-      setEditingId(item.id);
+      setEditingId(item.patient_id);
       setEditedData({ ...item }); // populate data into editable state
     }}
   />
@@ -603,7 +603,7 @@ const handleRowClick = (e, itemId) => {
     className="icon delete-icon"
     onClick={(e) => {
       e.stopPropagation();
-      handleDeleteAppointment(item.id);
+      handleDeleteAppointment(item.patient_id);
     }}
   />
               <FontAwesomeIcon icon={faAngleDown} title="Done" className="icon done-icon" />

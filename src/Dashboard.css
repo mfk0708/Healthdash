@@ -31,7 +31,7 @@ html, body {
 
 .dashboard-top-card {
 
-  
+  height:30%;
   border-radius: 6px;
  
   margin-bottom: 1rem;
@@ -44,7 +44,7 @@ html, body {
  display: flex;
   flex-direction: column;
   height: calc(100vh - 360px); /* Adjust this based on how tall your top section is */
-  min-height: 0;
+
    overflow: hidden;
 
 }
@@ -54,6 +54,7 @@ html, body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
+  height:8%;
 }
 .profile-box {
   display: flex;
@@ -119,27 +120,6 @@ html, body {
 }
 
 
-/* Section Header */
-
-
-
-
-
-/* Appointments Card */
-
-
-/* patient image and text left-aligned */
-
-
-/* Profile Image */
-
-
-/* Base Layout */
-
-
-
-/* Sidebar */
-
 
 /* Filters */
 .filters {
@@ -147,7 +127,7 @@ html, body {
   flex-wrap: wrap;
   align-items: center;
   gap: 2rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   
 }
 .search-container,

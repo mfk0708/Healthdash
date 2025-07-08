@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ProfileBox.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPrint, faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import { faPrint, faAngleDown, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const ProfileBox = ({ patient, onClose }) => {
   const [activeTab, setActiveTab] = useState('doctor');
@@ -54,7 +54,11 @@ const printPrescription = () => {
           <div className="hospital-name"><img src="./images/cudu.png" className='cudu-icon'></img> KEM</div>
           <div className="patient-details">
           <div class="patient-container">
-            <img src={patient.image} alt="Patient" className="patient-img" />
+            {patient.image ? (
+    <img src={patient.image} alt="Patient" className="patient-img" />
+  ) : (
+    <FontAwesomeIcon icon={faUser} className="patient-img" style={{ color: "grey" }}  />
+  )}
             <p className='pid'><strong>PID: {patient.pid}</strong></p>
             </div><div>
              <p><strong>Name:</strong> <span className="value">{patient.name}</span></p>

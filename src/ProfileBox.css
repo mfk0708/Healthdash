@@ -273,7 +273,7 @@ justify-content: center;
   background: white;
   border-radius: 14px;
   padding: 0.8rem 1rem 0.1rem 1rem;
-  
+  width:60%;
   border: 1px solid white;
   
 }
@@ -293,7 +293,7 @@ justify-content: center;
   color: white;
   padding:0.5rem 2rem 0.5rem 2rem;
   border-radius: 12px;
-width:250px;
+width:50%;
   font-size: 0.9rem;
   justify-content: center;
 }

@@ -76,6 +76,7 @@
   height: 70px;
   border-radius: 50%;
   object-fit: cover;
+  border: 1px solid #BEBEBE;
 }
 
 
@@ -424,7 +425,7 @@ display: grid;
 .remove-button {
   position: absolute;
   top: 4px;
-  left:70%;
+  left:80%;
   background: none;
   color: #002d1f;
   border: none;
