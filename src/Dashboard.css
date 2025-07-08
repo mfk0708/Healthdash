@@ -12,7 +12,7 @@ html, body {
 }
 .dash-head{
   font-size: 1.4rem;
-  color: #2563EB;
+  color: #1E76CC;
   
 }
 .dashboard-layout {
@@ -372,7 +372,7 @@ html, body {
 
 .section-header h2 {
   margin-top: 0;
-  color: #2563EB;
+  color: #1E76CC;
   font-size: 1rem;
 }
 
@@ -731,7 +731,7 @@ padding: 0.5rem 1rem ;
 .greeting-text .doctor-name {
   font-size: 1.5rem;
   font-weight: 700;
-  color:#2563EB ;
+  color:#1E76CC ;
   margin-bottom: 2.5rem;
 }
 

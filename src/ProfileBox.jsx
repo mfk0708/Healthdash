@@ -59,10 +59,10 @@ const printPrescription = () => {
   ) : (
     <FontAwesomeIcon icon={faUser} className="patient-img" style={{ color: "grey" }}  />
   )}
-            <p className='pid'><strong>PID: {patient.pid}</strong></p>
+            <p className='pid'><strong>PID: {patient.patient_id}</strong></p>
             </div><div>
-             <p><strong>Name:</strong> <span className="value">{patient.name}</span></p>
-<p><strong>Age:</strong> <span className="value">{patient.age} years</span></p>
+             <p><strong>Name:</strong> <span className="value">{patient.patient_name}</span></p>
+<p><strong>Age:</strong> <span className="value">{patient.patient_age} years</span></p>
 <p><strong>Gender:</strong> <span className="value">{patient.gender}</span></p>
 <p><strong>Blood Group:</strong> <span className="value">{patient.bloodGroup}</span></p>
 <p><strong>Weight:</strong> <span className="value">{patient.weight}</span></p>
@@ -80,13 +80,13 @@ const printPrescription = () => {
           <p>Phone:<br /><span className="value">{patient.phone}</span></p>
       <p>City:<br /><span className="value">{patient.city}</span></p>
       <p>Address:<br /><span className="value">{patient.address}, {patient.city}</span></p>
-      <p>Pin Code:<br /><span className="value">490002</span></p></div>
+      <p>Pin Code:<br /><span className="value">{patient.pincode}</span></p></div>
           <div className="insurance-card">
            <div className="house-pentagon"><span>H</span></div>
             <p className="assurance-heading"> Assurance number</p>
-            <h3>{patient.assuranceNumber}</h3>
+            <h3>{patient.assuranceNumber  || "Not defined"}</h3>
             <p className='expiry'>EXPIRY DATE</p>
-            <p>{patient.expiryDate}</p>
+            <p>{patient.expiryDate|| "Not defined"}</p>
       
         </div></div>
       </div></div>

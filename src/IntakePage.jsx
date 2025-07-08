@@ -230,20 +230,23 @@ const handlePathologySave = async () => {
             {patient.email && (
               <p><span className="value-email">{patient.email}</span></p>
             )}
-            {patient.phone && patient.phone.trim() !== "" && (
-              <div className="icon-row">
-                <a href={`tel:${patient.phone}`}>
-                  <FontAwesomeIcon icon={faPhoneVolume} className="phone-icon" />
-                </a>
-                <a
-                  href={`https://wa.me/${formatPhone(patient.phone)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FontAwesomeIcon icon={faMessage} className="message-icon" />
-                </a>
-              </div>
-            )}
+          <div className="icon-row">
+  <a
+    href={patient.phone ? `tel:${patient.phone}` : "#"}
+    style={{ pointerEvents: patient.phone ? "auto" : "none", opacity: patient.phone ? 1 : 0.3 }}
+  >
+    <FontAwesomeIcon icon={faPhoneVolume} className="phone-icon" />
+  </a>
+  <a
+    href={patient.phone ? `https://wa.me/${formatPhone(patient.phone)}` : "#"}
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{ pointerEvents: patient.phone ? "auto" : "none", opacity: patient.phone ? 1 : 0.3 }}
+  >
+    <FontAwesomeIcon icon={faMessage} className="message-icon" />
+  </a>
+</div>
+
           </div>
         </>
       ) : (
@@ -264,14 +267,15 @@ const handlePathologySave = async () => {
             <p>Address:<br /><span className="value1">{patient.address}, {patient.city}</span></p>
             <p>Registered Date<br /><span className="value1">{patient.registered}</span></p>
           </div>
+<div className="insurance-card1">
+  <div className="house-pentagon1"><span>H</span></div>
+  <p className="assurance-heading1">Assurance number</p>
+  <h3>{patient.assuranceNumber || "Not defined"}</h3>
+  <p className='expiry1'>EXPIRY DATE</p>
+  <p>{patient.expiryDate || "Not defined"}</p>
+</div>
 
-          <div className="insurance-card1">
-            <div className="house-pentagon1"><span>H</span></div>
-            <p className="assurance-heading1">Assurance number</p>
-            <h3>{patient.assuranceNumber}</h3>
-            <p className='expiry1'>EXPIRY DATE</p>
-            <p>{patient.expiryDate}</p>
-          </div>
+         
         </>
       ) : (
         <div className="right1">No detailed patient info</div>

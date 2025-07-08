@@ -48,8 +48,8 @@
 
 /* Active (selected) link */
 .nav-active {
-  background: #bfcbe6;
-  color: #2563EB;
+  background: #C9E4FF;
+  color: #1E76CC;
   padding: 0.75rem;
   border-radius: 0.75rem;
   font-weight: 500;
@@ -60,8 +60,8 @@ text-decoration: none;
 
 /* Hover effect ONLY for non-active links */
 .nav-link:hover {
-  background-color: #bfcbe6;
-  color: #2563EB;
+  background-color: #C9E4FF ;
+  
   transition: background-color 0.3s ease, color 0.3s ease;
   border-radius: 0.75rem;
   padding: 0.75rem;

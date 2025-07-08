@@ -16,7 +16,7 @@
 .intake-title {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #2563eb;
+  color: #1E76CC;
   
 }
 
@@ -104,7 +104,7 @@
 
 .phone-icon,
 .message-icon {
-  background-color: #f0f0f0;
+  background-color: #cbd5e1;
   padding: 0.5rem;
   border-radius: 50%;
   color:  #2563EB;
@@ -293,7 +293,7 @@ display: grid;
   width: 100%;
   border: 1px solid  #bfcbe6;;
   border-radius: 1px;
-  background-color:  #bfcbe6;;
+  background-color:  #E5F2FF;;
   color:black;
   margin: 0;
    font-weight: 500;
