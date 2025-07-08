@@ -206,7 +206,8 @@ const handleRowClick = (e, itemId) => {
       const isSameMonth =
         itemDate.getMonth() === selectedDate.getMonth() &&
         itemDate.getFullYear() === selectedDate.getFullYear();
-      return matchesSearch && (isSameDay || isSameMonth);
+      return matchesSearch && isSameDay;
+
     }
     return matchesSearch;
   });
