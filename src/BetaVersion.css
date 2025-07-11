@@ -13,7 +13,7 @@
 .beta-heading {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #2563EB;
+  color: #1E76CC;
   margin-bottom: 1.5rem;
 }
 
@@ -81,13 +81,13 @@
 .card-subheading {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #2563EB;
+  color: #1E76CC;
   margin-bottom: 0.5rem;
 }
 .card-subheading1 {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #2563EB;
+  color: #1E76CC;
   margin-bottom: 0.5rem;
   text-align: left;
 }
@@ -134,14 +134,14 @@
 }
 
 .analyse-btn {
-  background-color: #2563EB;
+  background-color: #719DC8;
   color: white;
   margin-right: 1rem;
 
 }
 
 .analyse-btn:hover {
-  background-color: #1d4ed8;
+  background-color:#719DC8;
 }
 
 .canc-btn {
@@ -166,12 +166,12 @@
 }
 
 .blue-btn {
-  background-color: #2563EB;
+  background-color: #1E76CC;
   color: white;
 }
 
 .blue-btn:hover {
-  background-color: #1d4ed8;
+  background-color: #1E76CC;
 }
 
 
@@ -271,7 +271,7 @@ height: 300px;
 }
 
 .blue-btn3 {
-  background-color: #2563eb;
+  background-color: #1E76CC;
   color: white;
   padding: 0.5rem 1.2rem;
   border: none;
@@ -281,7 +281,7 @@ height: 300px;
 }
 
 .blue-btn3:hover {
-  background-color: #1d4ed8;
+  background-color: #1E76CC;
 }
 
 

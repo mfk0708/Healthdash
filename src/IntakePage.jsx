@@ -5,7 +5,19 @@ import BetaVersion from './BetaVersion.jsx';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser,faFolderOpen,faBell,faAngleDown, faPhoneVolume, faXmark, faMessage} from "@fortawesome/free-solid-svg-icons";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend
+} from "chart.js";
 
+ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 const IntakePage = ({ onClose, patient }) => {
  
   const [medicines, setMedicines] = useState([
@@ -23,6 +35,8 @@ const [doctor, setDoctor] = useState({ name: '', image: '' });
 const [uploadedFiles, setUploadedFiles] = useState({});
 const [uploadSuccess, setUploadSuccess] = useState({});
 
+const [fullProfile, setFullProfile] = useState(null);
+ const [comment, setComment] = useState('');
 const intakeRef = useRef();
 useEffect(() => {
   const handleClickOutsideIntake = (event) => {
@@ -38,7 +52,19 @@ useEffect(() => {
   };
 }, [onClose]);
 
-
+ useEffect(() => {
+    // Fetch full profile data
+    if (patient?.patient_id) {
+      fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/profile/${patient.patient_id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            setFullProfile(data[0]);
+          }
+        })
+        .catch(err => console.error("Error fetching profile:", err));
+    }
+  }, [patient?.patient_id]);
 useEffect(() => {
   const handleClickOutside = (event) => {
     if (popupRef.current && !popupRef.current.contains(event.target)) {
@@ -64,8 +90,7 @@ useEffect(() => {
     setMedicines(updated);
   };
 
-
-  useEffect(() => {
+ useEffect(() => {
     fetch('/chartData.json')
       .then((res) => res.json())
       .then((data) => {
@@ -78,21 +103,19 @@ useEffect(() => {
       });
   }, []);
 
-  const [comment, setComment] = useState('');
+ 
 const handleCommentSubmit = async () => {
   if (!comment.trim()) {
     alert("Comment cannot be empty.");
     return;
   }
 
-
   try {
-    const response = await fetch("https://bands-owners-tall-fork.trycloudflare.com", {
+    const response = await fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/comment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        patientId: patient?.patient_id || null,
-        doctor: patient?.doctor_name || "Unknown",
+        patient_id: patient?.patient_id || null,
         comment: comment
       })
     });
@@ -107,6 +130,7 @@ const handleCommentSubmit = async () => {
     alert("Error submitting comment.");
   }
 };
+
 
 const handleClearComment = () => {
   setComment('');
@@ -123,69 +147,104 @@ const formatPhone = (phone) => {
   }
   return cleaned;
 };
- const handlePrescriptionSave = async () => {
-  const doctorId = localStorage.getItem("doctor_id"); // Or however you manage it
+
+const handlePrescriptionSave = async () => {
+  const patientId = patient?.patient_id || null;
+
+  const validMedicines = medicines.filter(
+    (med) => med.name && med.dosage && med.frequency && med.duration
+  );
+
+  if (validMedicines.length === 0) {
+    alert("Please fill in at least one valid medicine.");
+    return;
+  }
 
   try {
-    const response = await fetch("https://bands-owners-tall-fork.trycloudflare.com/prescription", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        patient_id: patient?.patient_id || null,
-        doctor_id: doctorId || "doc123", // Replace with actual doctor ID
-        medicines: medicines,
-      }),
-    });
+    // Send one medicine at a time
+    for (const med of validMedicines) {
+      const singlePrescription = {
+        patient_id: patientId,
+        medicine: med.name,
+        dosage: med.dosage,
+        frequency: med.frequency,
+        duration: med.duration,
+        notes: med.notes,
+      };
 
-    const resultText = await response.text();
+      const response = await fetch(
+        `https://butter-orientation-conceptual-treatment.trycloudflare.com/prescription`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(singlePrescription),
+        }
+      );
 
-    if (response.ok) {
-      alert("Prescription saved successfully!");
-    } else {
-      console.error("Raw error response:", resultText);
-      alert("Failed to save prescription:\n" + resultText);
+      const resultText = await response.text();
+
+      if (!response.ok) {
+        console.error("Failed for:", singlePrescription);
+        alert("Error saving prescription:\n" + resultText);
+        return; // Stop on first error
+      }
     }
+
+    alert("All prescriptions saved successfully!");
   } catch (error) {
     console.error("Network error:", error);
     alert("Error saving prescription.");
   }
 };
 
-
 const handlePathologySave = async () => {
+  const patientId = patient?.patient_id || null;
+
+  const validTests = selectedTests.filter((test) => testResults[test]?.trim());
+
+  if (validTests.length === 0) {
+    alert("Please enter at least one valid test result.");
+    return;
+  }
+
   try {
-    const formData = new FormData();
+    for (const testName of validTests) {
+      const testResult = testResults[testName];
 
-    formData.append("patientId", patient?.patient_id || null);
+      const testPayload = {
+        pat_id: patientId,  // ✅ FIXED: Changed key from patient_id → pat_id
+        test_name: testName,
+        result: testResult,
+      };
 
-    selectedTests.forEach((testName, index) => {
-      const result = testResults[testName] || '';
-      const file = uploadedFiles[testName] || null;
+      const response = await fetch("https://butter-orientation-conceptual-treatment.trycloudflare.com/pathology/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(testPayload),
+      });
 
-      formData.append(`tests[${index}][testName]`, testName);
-      formData.append(`tests[${index}][result]`, result);
+      const resultText = await response.text();
 
-      if (file) {
-        formData.append(`tests[${index}][file]`, file);
+      if (!response.ok) {
+        console.error("Failed to save:", testPayload);
+        alert("Failed to save pathology:\n" + resultText);
+        return;
       }
-    });
-
-    const response = await fetch("https://bands-owners-tall-fork.trycloudflare.com/pathology", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (response.ok) {
-      alert("Pathology data saved successfully!");
-    } else {
-      alert("Failed to save pathology.");
     }
+
+    alert("All pathology data saved successfully!");
   } catch (error) {
+    console.error("Network error:", error);
     alert("Error saving pathology data.");
   }
 };
+
+
+
 
 
 
@@ -209,80 +268,66 @@ const handlePathologySave = async () => {
         <FontAwesomeIcon icon={faAngleDown} className="vectorlogo" />
       </div>
     </div></div>
-    <div className="top-cards1">
-  {/* Left Card */}
-  <div className="left-card1">
-    <div>
-      {patient && (patient.patient_name || patient.email || patient.phone) ? (
-        <>
-          <div className="patient-container1">
-            {patient.image ? (
-              <img src={patient.image} alt="Patient" className="patient-img1" />
+
+ 
+ <div className="top-cards1">
+        {/* Left Card: basic info */}
+        <div className="left-card1">
+          {fullProfile ? (
+            <>
+              <div className="patient-container1">
+                {fullProfile.profile_picture ? (
+                  <img src={`./images/${fullProfile.profile_picture}`} alt="Patient" className="patient-img1" />
+                ) : (
+                  <FontAwesomeIcon icon={faUser} className="patient-img1" style={{ color: "grey" }} />
+                )}
+              </div>
+              <div className="patient-details1">
+                <p className="value-name">{fullProfile.name}</p>
+                <p className="value-email">{fullProfile.email}</p>
+                <div className="icon-row">
+                  <a href={fullProfile.phone ? `tel:${fullProfile.phone}` : "#"} style={{ pointerEvents: fullProfile.phone ? 'auto' : 'none', opacity: fullProfile.phone ? 1 : 0.3 }}>
+                    <FontAwesomeIcon icon={faPhoneVolume} className="phone-icon" />
+                  </a>
+                  <a href={fullProfile.phone ? `https://wa.me/${fullProfile.phone.replace(/\D/g, '').padStart(10, '91')}` : "#"} target="_blank" rel="noopener noreferrer" style={{ pointerEvents: fullProfile.phone ? 'auto' : 'none', opacity: fullProfile.phone ? 1 : 0.3 }}>
+                    <FontAwesomeIcon icon={faMessage} className="message-icon" />
+                  </a>
+                </div>
+              </div>
+            </>
+          ) : <div>Loading patient...</div>}
+        </div>
+
+        {/* Right Card: detailed info */}
+        <div className="right-card1">
+          <div className="right-content-row1">
+            {fullProfile ? (
+              <>
+                <div className="right1">
+                  <p>Date of Birth:<br /><span className="value1">{fullProfile.dob}</span></p>
+                  <p>Marital Status:<br /><span className="value1">{fullProfile.marital_status || fullProfile.martial}</span></p>
+                  <p>Phone:<br /><span className="value1">{fullProfile.phone}</span></p>
+                  <p>Address:<br /><span className="value1">{fullProfile.address}, {fullProfile.city}</span></p>
+                  <p>Registered Date:<br /><span className="value1">{fullProfile.registration_date || fullProfile.registered}</span></p>
+                </div>
+                <div className="insurance-card1">
+                  <div className="house-pentagon1"><span>H</span></div>
+                  <p className="assurance-heading1">Assurance number</p>
+                  <h3>{fullProfile.assurance_number || fullProfile.assuranceNumber}</h3>
+                  <p className='expiry1'>EXPIRY DATE</p>
+                  <p>{fullProfile.expiry_date || fullProfile.expiryDate}</p>
+                </div>
+              </>
             ) : (
-              <FontAwesomeIcon icon={faUser} className="patient-img1" style={{ color: "grey" }} />
+              <div>Loading profile details...</div>
             )}
           </div>
-
-          <div className="patient-details1">
-            {patient.patient_name && (
-              <p><span className="value-name">{patient.patient_name}</span></p>
-            )}
-            {patient.email && (
-              <p><span className="value-email">{patient.email}</span></p>
-            )}
-          <div className="icon-row">
-  <a
-    href={patient.phone ? `tel:${patient.phone}` : "#"}
-    style={{ pointerEvents: patient.phone ? "auto" : "none", opacity: patient.phone ? 1 : 0.3 }}
-  >
-    <FontAwesomeIcon icon={faPhoneVolume} className="phone-icon" />
-  </a>
-  <a
-    href={patient.phone ? `https://wa.me/${formatPhone(patient.phone)}` : "#"}
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{ pointerEvents: patient.phone ? "auto" : "none", opacity: patient.phone ? 1 : 0.3 }}
-  >
-    <FontAwesomeIcon icon={faMessage} className="message-icon" />
-  </a>
-</div>
-
-          </div>
-        </>
-      ) : (
-        <div>No patient data available</div>
-      )}
-    </div>
-  </div>
-
-  {/* Right Card */}
-  <div className="right-card1">
-    <div className="right-content-row1">
-      {patient ? (
-        <>
-          <div className='right1'>
-            <p>Date of birth:<br /><span className="value1">{patient.birth}</span></p>
-            <p>Martial Status:<br /><span className="value">{patient.martial}</span></p>
-            <p>Phone:<br /><span className="value1">{patient.phone}</span></p>
-            <p>Address:<br /><span className="value1">{patient.address}, {patient.city}</span></p>
-            <p>Registered Date<br /><span className="value1">{patient.registered}</span></p>
-          </div>
-<div className="insurance-card1">
-  <div className="house-pentagon1"><span>H</span></div>
-  <p className="assurance-heading1">Assurance number</p>
-  <h3>{patient.assuranceNumber || "Not defined"}</h3>
-  <p className='expiry1'>EXPIRY DATE</p>
-  <p>{patient.expiryDate || "Not defined"}</p>
-</div>
+        </div>
+      </div>
 
          
-        </>
-      ) : (
-        <div className="right1">No detailed patient info</div>
-      )}
-    </div>
-  </div>
-</div>
+  
+
  
 
 

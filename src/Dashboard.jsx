@@ -89,8 +89,9 @@ useEffect(() => {
 }, []);
 
 
+ 
   useEffect(() => {
-    fetch("https://bands-owners-tall-fork.trycloudflare.com/dashboard")
+    fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/dashboard`)
       .then((res) => res.json())
       .then((data) => {
         const withStatus = data.map((item) => ({
@@ -153,12 +154,36 @@ useEffect(() => {
     );
   };
 
-  const saveEditedData = (patient_id) => {
+const saveEditedData = async (patient_id) => {
+  const updatedPatient = { ...editedData };
+
+  try {
+    const response = await fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/patient/${patient_id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedPatient),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update patient");
+    }
+
+    const updatedFromServer = await response.json();
+
     setAppointmentsData((prev) =>
-      prev.map((appt) => (appt.id === patient_id ? { ...appt, ...editedData } : appt))
+      prev.map((appt) =>
+        appt.patient_id === patient_id ? { ...appt, ...updatedFromServer } : appt
+      )
     );
-    setEditingId(null);
-  };
+  } catch (error) {
+    console.error("Error updating patient:", error);
+  }
+
+  setEditingId(null); // Exit edit mode
+};
+
 
   const handleQuickDate = (option) => {
     const base = new Date();
@@ -188,10 +213,13 @@ useEffect(() => {
       )
     );
   };
+
 const handleRowClick = (e, itemId) => {
-  const isInsideButton = e.target.closest(".intake-btn, .status-text");
-  if (!isInsideButton) {
-    const patientData = appointmentsData.find((item) => item.patient_id === itemId); // ✅ FIXED HERE
+  const isInsideButton = e.target.closest(".intake-btn, .status-text, .edit-input, .icon");
+
+  // Prevent profile opening if we're in edit mode
+  if (!isInsideButton && !editingId) {
+    const patientData = appointmentsData.find((item) => item.patient_id === itemId);
     setSelectedPatient(patientData);
     setShowProfileBox(true);
   }
@@ -442,176 +470,175 @@ const handleRowClick = (e, itemId) => {
 </div>
 
 <div className="appointments-card-scroll">
-        {paginatedAppointments.map((item) => (
-          <div
-            key={item.patient_id || item.patient_name}
-            className={`appointment-row ${activeKey === item.patient_id ? "active" : ""}`}
-            onClick={(e) => handleRowClick(e, item.patient_id)}
-          >
-           <div className="cell patient">
-  {editingId === item.patient_id ? (
-    <input
-      value={editedData.name}
-      onChange={(e) => handleInputChange("name", e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
-      onBlur={() => saveEditedData(item.patient_id)}
-      className="edit-input"
-    />
-  ) : (
-    <>
-      {item.image ? (
-        <img src={item.patient_image} alt={item.patient_name} className="avatar" />
+      {paginatedAppointments.map((item) => (
+  <div
+    key={item.patient_id}
+    className={`appointment-row ${activeKey === item.patient_id ? "active" : ""}`}
+    onClick={(e) => handleRowClick(e, item.patient_id)}
+  >
+    {/* Patient Name */}
+    <div className="cell patient">
+      {editingId === item.patient_id ? (
+        <input
+          value={editedData.patient_name || ""}
+          onChange={(e) => handleInputChange("patient_name", e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
+          onBlur={() => saveEditedData(item.patient_id)}
+          className="edit-input"
+        />
       ) : (
-        <FontAwesomeIcon icon={faUser} className="avatar default-avatar" />
+        <>
+          {item.patient_image ? (
+            <img src={item.patient_image} alt={item.patient_name} className="avatar" />
+          ) : (
+            <FontAwesomeIcon icon={faUser} className="avatar default-avatar" />
+          )}
+          <span>{item.patient_name || "—"}</span>
+        </>
       )}
-      <span>{item.patient_name || "—"}</span>
-    </>
-  )}
-</div>
+    </div>
 
-            <div className="cell age">
-  {editingId === item.patient_id ? (
-    <input
-      type="number"
-      value={editedData.patient_age}
-      onChange={(e) => handleInputChange("age", e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
-      onBlur={() => saveEditedData(item.patient_id)}
-      className="edit-input"
-    />
-  ) : (
-    item.patient_age || "—"
-  )}
-</div>
-<div className="cell date">
-  {editingId === item.patient_id ? (
-    <input
-      type="date"
-      value={editedData.date}
-      onChange={(e) => handleInputChange("date", e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
-      onBlur={() => saveEditedData(item.patient_id)}
-      className="edit-input"
-    />
-  ) : (
-    item.date || "—"
-  )}
-</div>
-<div className="cell time">
-  {editingId === item.patient_id ? (
-    <input
-      type="time"
-      value={editedData.time}
-      onChange={(e) => handleInputChange("time", e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
-      onBlur={() => saveEditedData(item.patient_id)}
-      className="edit-input"
-    />
-  ) : (
-    item.time || "—"
-  )}
-</div>
+    {/* Age */}
+    <div className="cell age">
+      {editingId === item.patient_id ? (
+        <input
+          type="number"
+          value={editedData.patient_age || ""}
+          onChange={(e) => handleInputChange("patient_age", e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
+          onBlur={() => saveEditedData(item.patient_id)}
+          className="edit-input"
+        />
+      ) : (
+        item.patient_age || "—"
+      )}
+    </div>
 
-   <div className="cell reason">
-  {editingId === item.patient_id ? (
-    <input
-      value={editedData.patient_disease}
-      onChange={(e) =>
-        setEditedData((prev) => ({ ...prev, disease: e.target.value }))
-      }
-      onKeyDown={(e) => {
-        if (e.key === "Enter") {
-          setAppointmentsData((prev) =>
-            prev.map((appt) =>
-              appt.id === item.patient_id ? { ...appt, disease: editedData.disease } : appt
-            )
-          );
-          setEditingId(null); // Exit edit mode
-        }
+    {/* Date */}
+    <div className="cell date">
+      {editingId === item.patient_id ? (
+        <input
+          type="date"
+          value={editedData.date || ""}
+          onChange={(e) => handleInputChange("date", e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
+          onBlur={() => saveEditedData(item.patient_id)}
+          className="edit-input"
+        />
+      ) : (
+        item.date || "—"
+      )}
+    </div>
+
+    {/* Time */}
+    <div className="cell time">
+      {editingId === item.patient_id ? (
+        <input
+          type="time"
+          value={editedData.time || ""}
+          onChange={(e) => handleInputChange("time", e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
+          onBlur={() => saveEditedData(item.patient_id)}
+          className="edit-input"
+        />
+      ) : (
+        item.time || "—"
+      )}
+    </div>
+
+    {/* Reason (Disease) */}
+    <div className="cell reason">
+      {editingId === item.patient_id ? (
+        <input
+          value={editedData.disease || ""}
+          onChange={(e) => handleInputChange("disease", e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
+          onBlur={() => saveEditedData(item.patient_id)}
+          className="edit-input"
+        />
+      ) : (
+        item.disease || "—"
+      )}
+    </div>
+
+    {/* Doctor */}
+    <div className="cell doctor">
+      {editingId === item.patient_id ? (
+        <input
+          value={editedData.doctor_name || ""}
+          onChange={(e) => handleInputChange("doctor_name", e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
+          onBlur={() => saveEditedData(item.patient_id)}
+          className="edit-input"
+        />
+      ) : (
+        item.doctor_name || "—"
+      )}
+    </div>
+
+    {/* Status */}
+    <div
+      className="cell status status-text"
+      onClick={(e) => {
+        e.stopPropagation();
+        toggleStatusWithDelay(item.patient_name, item.status);
       }}
-      onBlur={() => {
-        setAppointmentsData((prev) =>
-          prev.map((appt) =>
-            appt.id === item.patient_id ? { ...appt, disease: editedData.disease } : appt
-          )
-        );
-        setEditingId(null); // Exit edit mode
+      style={{
+        cursor: "pointer",
+        color: item.status === "Completed" ? "black" : "red",
+        fontWeight: 500,
       }}
-      className="edit-input"
-    />
-  ) : (
-    item.disease || "—"
-  )}
-</div>
-       
-           
-          
-<div className="cell doctor">
-  {editingId === item.patient_id ? (
-    <input
-      value={editedData.doctor_name}
-      onChange={(e) => handleInputChange("doctor", e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
-      onBlur={() => saveEditedData(item.patient_id)}
-      className="edit-input"
-    />
-  ) : (
-    item.doctor_name || "—"
-  )}
-</div>
+    >
+      {item.status || "—"}
+    </div>
 
-           
-            <div
-              className="cell status status-text"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleStatusWithDelay(item.patient_name, item.status);
-              }}
-              style={{
-                cursor: "pointer",
-                color: item.status === "Completed" ? "black" :"red",
-                fontWeight: 500,
-              }}
-            >
-              {item.status || "—"}
-            </div>
-            <div className="cell action">
-              <button
-                className="intake-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedPatient(item);
-                  setShowIntake(true);
-                }}
-              >
-                Intake
-              </button>
-            </div>
-            <div className="cell options">
-              <FontAwesomeIcon
-    icon={faPen}
-    title="Edit"
-    className="icon edit-icon"
-    onClick={(e) => {
-      e.stopPropagation();
-      setEditingId(item.patient_id);
-      setEditedData({ ...item }); // populate data into editable state
-    }}
-  />
-  <FontAwesomeIcon
-    icon={faTrash}
-    title="Delete"
-    className="icon delete-icon"
-    onClick={(e) => {
-      e.stopPropagation();
-      handleDeleteAppointment(item.patient_id);
-    }}
-  />
-              <FontAwesomeIcon icon={faAngleDown} title="Done" className="icon done-icon" />
-            </div>
-          </div>
-          
-        ))}</div>
+    {/* Intake Button */}
+    <div className="cell action">
+      <button
+        className="intake-btn"
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedPatient(item);
+          setShowIntake(true);
+        }}
+      >
+        Intake
+      </button>
+    </div>
+
+    {/* Edit/Delete Icons */}
+    <div className="cell options">
+      <FontAwesomeIcon
+        icon={faPen}
+        title="Edit"
+        className="icon edit-icon"
+        onClick={(e) => {
+          e.stopPropagation();
+          setEditingId(item.patient_id);
+          setEditedData({
+            patient_name: item.patient_name,
+            patient_age: item.patient_age,
+            date: item.date,
+            time: item.time,
+            disease: item.disease,
+            doctor_name: item.doctor_name,
+          });
+        }}
+      />
+      <FontAwesomeIcon
+        icon={faTrash}
+        title="Delete"
+        className="icon delete-icon"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDeleteAppointment(item.patient_id);
+        }}
+      />
+      <FontAwesomeIcon icon={faAngleDown} title="Done" className="icon done-icon" />
+    </div>
+  </div>
+))}
+ </div>
       </div>
 
      </div>

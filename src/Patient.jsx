@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Patient.css';
 import { Search } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faUser } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfileBox from './ProfileBox.jsx';
@@ -12,27 +12,37 @@ const Patient = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('Alphabetical');
   const [selectedDate, setSelectedDate] = useState(null);
-  const [filterType, setFilterType] = useState('date'); // 'date' or 'month'
-const [selectedPatient, setSelectedPatient] = useState(null);
+  const [filterType, setFilterType] = useState('date');
+  const [selectedPatient, setSelectedPatient] = useState(null);
+
   useEffect(() => {
-    fetch('/appointments.json')
+    fetch('https://butter-orientation-conceptual-treatment.trycloudflare.com/dashboard')
       .then((response) => response.json())
       .then((data) => setPatients(data))
       .catch((error) => console.error('Error fetching patients:', error));
   }, []);
 
+  const fetchPatientById = async (patientId) => {
+    try {
+      const response = await fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/profile/${patientId}`);
+      if (!response.ok) throw new Error('Failed to fetch patient');
+      const data = await response.json();
+      if (Array.isArray(data) && data.length > 0) {
+        setSelectedPatient(data[0]); // set first object
+      }
+    } catch (error) {
+      console.error('Error fetching patient by ID:', error);
+    }
+  };
+
   const sortedPatients = [...patients].sort((a, b) => {
     if (sortBy === 'Alphabetical') {
-      return a.name.localeCompare(b.name);
+      return (a.patient_name || '').localeCompare(b.patient_name || '');
     } else if (sortBy === 'Newest') {
-      return new Date(b.lastVisit) - new Date(a.lastVisit);
+      return new Date(b.date) - new Date(a.date);
     }
     return 0;
   });
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
 
   const formatDate = (dateObj) => {
     const year = dateObj.getFullYear();
@@ -42,11 +52,11 @@ const [selectedPatient, setSelectedPatient] = useState(null);
   };
 
   const filteredPatients = sortedPatients.filter((patient) => {
-    const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (patient.patient_name || '').toLowerCase().includes(searchTerm.toLowerCase());
 
     let matchesDate = true;
     if (selectedDate) {
-      const patientDateObj = new Date(patient.lastVisit);
+      const patientDateObj = new Date(patient.date);
       const formattedPatientDate = formatDate(patientDateObj);
       const formattedSelectedDate = formatDate(selectedDate);
 
@@ -62,7 +72,7 @@ const [selectedPatient, setSelectedPatient] = useState(null);
 
   return (
     <div className="patients-container">
-      {/* Title + Search */}
+      {/* Header Section */}
       <div className="patients-title-bar">
         <h1 className="page-heading">Patients</h1>
         <div className="search-wrapper">
@@ -84,71 +94,58 @@ const [selectedPatient, setSelectedPatient] = useState(null);
         </div>
       </div>
 
-      {/* Filters and Add Button */}
+      {/* Filters */}
       <div className="patients-header">
         <div className="filters">
           <div className="filter-group-row">
             <label className="filter-label">Sort by:</label>
-            <div className="sortby">
-              <select
-                className="sort-select"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="Alphabetical">Alphabetical</option>
-                <option value="Newest">Newest</option>
-              </select>
-            </div>
+            <select className="sort-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <option value="Alphabetical">Alphabetical</option>
+              <option value="Newest">Newest</option>
+            </select>
           </div>
 
           <div className="filter-group-row">
             <label className="filter-label">Filter by Date:</label>
             <div className="date-filter">
               <DatePicker
-  selected={selectedDate}
-  onChange={handleDateChange}
-  placeholderText="Select a date"
-  dateFormat={filterType === 'date' ? 'yyyy-MM-dd' : 'yyyy-MM'}
-  showMonthYearPicker={filterType === 'month'}
-  className="date-input"
-  calendarClassName="custom-calendar"
-  calendarContainer={({ className, children }) => (
-    <div className={`${className} custom-calendar-wrapper`}>
-      {children}
-      <button
-        className="clear-button"
-        onClick={(e) => {
-          e.preventDefault();
-          setSelectedDate(null);
-        }}
-      >
-        Clear
-      </button>
-    </div>
-  )}
-  renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
-    <div className="custom-header">
-      <button className="month-arrow" onClick={decreaseMonth}>{'<'}</button>
-      <span>
-        {date.toLocaleString('default', {
-          month: 'long',
-          year: 'numeric',
-        })}
-      </span>
-      <button className="month-arrow" onClick={increaseMonth}>{'>'}</button>
-      <button
-        className="toggle-button"
-        onClick={(e) => {
-          e.stopPropagation();
-          setFilterType((prev) => (prev === 'date' ? 'month' : 'date'));
-        }}
-      >
-        {filterType === 'date' ? 'Month' : 'Date'}
-      </button>
-    </div>
-  )}
-
-
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                placeholderText="Select a date"
+                dateFormat={filterType === 'date' ? 'yyyy-MM-dd' : 'yyyy-MM'}
+                showMonthYearPicker={filterType === 'month'}
+                className="date-input"
+                calendarClassName="custom-calendar"
+                calendarContainer={({ className, children }) => (
+                  <div className={`${className} custom-calendar-wrapper`}>
+                    {children}
+                    <button
+                      className="clear-button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedDate(null);
+                      }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
+                renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
+                  <div className="custom-header">
+                    <button className="month-arrow" onClick={decreaseMonth}>{'<'}</button>
+                    <span>{date.toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
+                    <button className="month-arrow" onClick={increaseMonth}>{'>'}</button>
+                    <button
+                      className="toggle-button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFilterType(prev => prev === 'date' ? 'month' : 'date');
+                      }}
+                    >
+                      {filterType === 'date' ? 'Month' : 'Date'}
+                    </button>
+                  </div>
+                )}
               />
             </div>
             <button className="add-button">+Add</button>
@@ -156,42 +153,45 @@ const [selectedPatient, setSelectedPatient] = useState(null);
         </div>
       </div>
 
-      {/* Patients Grid */}
+      {/* Patient Grid */}
       <div className="patients-grid">
         {filteredPatients.length > 0 ? (
           filteredPatients.map((patient, index) => (
             <div className="patient-card" key={index}>
               <div className="patient-info-row">
-               {patient?.image ? (
-    <img src={patient.image} alt={patient.name || "Patient"} className="profile-img" />
-  ) : (
-    <FontAwesomeIcon icon={faUser} className="profile-img default-avatar" />
-  )}
+                {patient?.image ? (
+                  <img src={patient.image} alt={patient.patient_name || "Patient"} className="profile-img" />
+                ) : (
+                  <FontAwesomeIcon icon={faUser} className="profile-img default-avatar" />
+                )}
                 <div className="patient-text">
-                  <h3>{patient.name || "Unknown Patient"}</h3>
-                  <p>{patient.age|| "unknown" } • {patient.gender|| "—"}</p>
+                  <h3>{patient.patient_name || "Unknown Patient"}</h3>
+                  <p>{patient.patient_age || "unknown"} • {patient.gender || "—"}</p>
                 </div>
-              </div> 
-              <p className="visit">Last visit: {patient.lastVisit}</p>
+              </div>
+              <p className="visit">Last visit: {patient.date}</p>
               <div className="full-width-divider-wrapper">
                 <hr className="card-divider" />
               </div>
-             <button className="view-btn" onClick={() => setSelectedPatient(patient)}>
-  View Profile
-</button>
-
+              <button
+                className="view-btn"
+                onClick={() => fetchPatientById(patient.patient_id)}
+              >
+                View Profile
+              </button>
             </div>
           ))
         ) : (
           <p>No patients found for the selected date or month.</p>
         )}
       </div>
-      {selectedPatient && (
-         <div className="profile-modal">
-  <ProfileBox patient={selectedPatient} onClose={() => setSelectedPatient(null)} />
-  </div>
-)}
 
+      {/* Profile Modal */}
+      {selectedPatient && (
+        <div className="profile-modal">
+          <ProfileBox patient={selectedPatient} onClose={() => setSelectedPatient(null)} />
+        </div>
+      )}
     </div>
   );
 };

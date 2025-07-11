@@ -144,7 +144,7 @@
    
  margin-left: 25px; 
   border: #4caf84;
-    background: #2563EB;
+    background: #1E76CC;
     font-size: 1rem;
     font-weight: 500;
 }
@@ -233,7 +233,7 @@
  position: absolute;
   top: 89%;
   right: 8px;
-  background-color:  #2563EB;
+  background-color:  #1E76CC;
   color: white;
   border: none;
   border-radius: 4px;
@@ -271,7 +271,7 @@
 .toggle-button {
   
 margin-left: 1rem;
-  background-color:  #2563EB;
+  background-color:  #1E76CC;
   border: none;
   color: #fff;
   border-radius: 4px;

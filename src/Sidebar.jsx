@@ -28,6 +28,7 @@ export default function Sidebar() {
           <nav className="nav">
             <NavLink to="/" className={({ isActive }) => isActive ? "nav-active" : "nav-link"}>
               <FontAwesomeIcon icon={faGaugeHigh} className="text-xl" />
+             
               <span>Dashboard</span>
             </NavLink>
             <NavLink to="/staff" className={({ isActive }) => isActive ? "nav-active" : "nav-link"}>

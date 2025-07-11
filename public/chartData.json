@@ -12,7 +12,13 @@
     "doctor": {
     "name": "Dr. Sarah Johnson",
     "image": "images/doctor.png"
-  }
-}
+  },
 
+ "hemoglobin": [
+    { "month": "3 months ago", "value": 12.1 },
+    { "month": "2 months ago", "value": 12.5 },
+    { "month": "1 month ago", "value": 13.0 },
+    { "month": "Present", "value": 13.8 }
+  ]
+}
 
