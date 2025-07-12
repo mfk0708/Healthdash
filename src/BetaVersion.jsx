@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import './BetaVersion.css';
 
-const BetaVersion = () => {
+const BetaVersion = ({ patient }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [transcribedText, setTranscribedText] = useState('');
@@ -61,37 +61,42 @@ const BetaVersion = () => {
   const handleVoiceToText = () => {
     setTranscribedText(recordedText.trim());
   };
-  const handleSaveToServer = async () => {
-  if (!transcribedText) {
+const handleSaveToServer = async () => {
+  if (!transcribedText.trim()) {
     alert("No symptoms to save!");
     return;
   }
 
+  console.log("Sending patient_id:", patient?.patient_id);
+  console.log("Sending symptoms:", transcribedText);
+
   try {
-    const response = await fetch('http://localhost:5000/api/save-symptoms', { // Replace with your actual server endpoint
+    const response = await fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/comment`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        symptoms: transcribedText
+        patient_id: patient?.patient_id || "",   
+        doctor_comment: "",                      
+        symptoms: transcribedText.trim()
       })
     });
 
-    const data = await response.json();
+    const text = await response.text();
+    console.log("Raw server response:", text);
+
     if (response.ok) {
-      alert("Symptoms saved successfully!");
-      console.log("Server response:", data);
+      alert("Symptoms saved successfully.");
     } else {
-      alert("Failed to save symptoms");
-      console.error("Error response:", data);
+      alert("Server error: " + text);
     }
   } catch (error) {
-    alert("Error connecting to server.");
     console.error("Network error:", error);
+    alert("Fetch error. Check console.");
   }
 };
-
+ 
 
   return (
     <div className="beta-container">

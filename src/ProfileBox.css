@@ -10,20 +10,24 @@
 }
 
 .profile-box-card {
-  background:#F4F4F4;
+  background: #F4F4F4;
   border-radius: 16px;
   padding: 2rem 2rem;
   width: 88%;
-  height:75%;
   max-width: 1000px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   position: relative;
-    max-height: 90vh; /* Limits height to viewport */
-  overflow-y: auto; 
-   scrollbar-width: thin;
-  scrollbar-color: #1E76CC #f0f0f0;
 
+  /* ✅ Only restrict the max height */
+  max-height: 75%;
+  height: auto;          /* ✅ Let it shrink if content is small */
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: #1E76CC #f0f0f0;
 }
+
+
 .profile-box-card::-webkit-scrollbar {
   width: 8px;
 }
@@ -89,7 +93,7 @@ margin-right: 1rem;
 }
 .tab-content {
   background-color: white;
-
+border-radius: 12px;
   padding: 0.1rem 2rem;
   
 
@@ -205,7 +209,7 @@ margin-right: 1rem;
   display: flex;
   gap: 1.5rem;
   margin-bottom: 1.5rem;
-  height:210px;
+  height:220px;
 }
 .left-card{
    border-radius: 8px;
@@ -213,6 +217,60 @@ margin-right: 1rem;
  width:40%;
    background-color: white;
    
+}
+.hemo-chart-wrapper {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  padding: 1rem;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.hemo-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1rem;
+  width: 100%;
+  max-width: 250px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+   justify-content: center;
+}
+
+.hemo-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #222;
+  font-weight: 600;
+}
+
+.hemo-header p {
+  margin: 2px 0 10px;
+  font-size: 10px;
+  color: #888;
+}
+
+.hemo-value {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: baseline;
+}
+
+.hemo-value .unit {
+  font-size: 12px;
+  margin-left: 4px;
+  color: #555;
+}
+
+.hemo-chart {
+  width: 100%;
+  height: 120px;
+  justify-content: center;
 }
 
 
@@ -238,6 +296,7 @@ justify-content: center;
   display: flex;
   gap: 1rem;
   align-items: flex-start;
+  
 }
 
 .patient-img {
@@ -252,13 +311,14 @@ justify-content: center;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap:1rem;
-  margin-left:10px; /* Align left */
+  gap:1.2rem;
+  margin-left:10px;
+margin-top: 0.50rem;
 }
 
 /* Info Text */
 .patient-details div p {
-  margin: 2px 0;
+  margin: 4px 0;
   font-size: 0.8rem;
 }
 .value {
@@ -275,6 +335,7 @@ justify-content: center;
   padding: 0.8rem 1rem 0.1rem 1rem;
   width:60%;
   border: 1px solid white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   
 }
 .right{

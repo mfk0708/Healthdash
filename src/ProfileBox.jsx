@@ -50,53 +50,63 @@ const ProfileBox = ({ patient, onClose }) => {
     printWindow.close();
   };
 
-  useEffect(() => {
-    fetch('/chartData.json')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.hemoglobin) {
-          setHemoData({
-            labels: data.hemoglobin.map((item) => item.month),
-            datasets: [
-              {
-                label: 'Hemoglobin (g/dL)',
-                data: data.hemoglobin.map((item) => item.value),
-                borderColor: '#9c27b0',
-                backgroundColor: '#e1bee7',
-                tension: 0.3,
-                fill: false,
-              },
-            ],
-          });
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching chart data:', error);
-      });
-  }, []);
+  
+useEffect(() => {
+  if (!patient?.patient_id) return;
+
+  fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/profile/${patient.patient_id}`)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Fetched profile from backend:", data); // 👈 Add this
+      const profile = data[0];
+
+      if (profile?.hemoglobin && Array.isArray(profile.hemoglobin)) {
+        console.log("Hemoglobin found:", profile.hemoglobin); // 👈 Add this
+        setHemoData({
+          labels: profile.hemoglobin.map((item) => item.month),
+          datasets: [
+            {
+              label: 'Hemoglobin (g/dL)',
+              data: profile.hemoglobin.map((item) => item.value),
+              borderColor: '#333',
+              backgroundColor: '#333',
+              tension: 0.3,
+              fill: false,
+            },
+          ],
+        });
+      } else {
+        console.warn("Hemoglobin data is missing or invalid");
+      }
+    })
+    .catch((error) => {
+      console.error('Error fetching hemoglobin chart data:', error);
+    });
+}, [patient?.patient_id]);
+
 
   useEffect(() => {
     if (patient?.patient_id) {
       // Fetch full profile
-      fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/profile/${patient.patient_id}`)
+      fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/profile/${patient.patient_id}`)
         .then(res => res.json())
         .then(data => setFullProfile(data[0])) // response is an array
         .catch(err => console.error("Error fetching patient profile:", err));
 
       // Pathology
-      fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/pathology/${patient.patient_id}`)
+      fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/pathology/${patient.patient_id}`)
         .then((res) => res.json())
         .then((data) => setPathology(data))
         .catch((error) => console.error('Error fetching pathology data:', error));
 
       // Doctor Checkup
-      fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/checkup/${patient.patient_id}`)
+      fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/checkup/${patient.patient_id}`)
         .then((res) => res.json())
         .then((data) => setVisitHistory(data || []))
         .catch((error) => console.error('Error fetching visit history:', error));
 
       // Prescription
-      fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/prescription/${patient.patient_id}`)
+      fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/prescription/${patient.patient_id}`)
         .then((res) => res.json())
         .then((data) => setPrescriptions(data?.prescriptions || []))
         .catch((error) => console.error('Error fetching prescriptions:', error));
@@ -152,15 +162,63 @@ const ProfileBox = ({ patient, onClose }) => {
                 <p>Pin Code:<br /><span className="value">{fullProfile?.pincode}</span></p>
               </div>      </div> 
           </div>
-              {hemoData && (
-                <div style={{ marginTop: '2rem' }}>
-                  <h4 style={{ textAlign: 'center' }}>Hemoglobin (g/dL)</h4>
-                  <Line data={hemoData} />
-                  <p style={{ textAlign: 'center', marginTop: '0.5rem' }}>
-                    Latest: <strong>{hemoData.datasets[0].data.at(-1)} g/dL</strong>
-                  </p>
-                </div>
-              )}
+{hemoData && (
+  <div className="hemo-card">
+    <div className="hemo-header">
+      <h3>Hemoglobin</h3>
+      <p>Over the past 3 months</p>
+    </div>
+    <div className="hemo-value">
+      <span className="value">{hemoData.datasets[0].data.at(-1)}</span>
+      <span className="unit">g/dL</span>
+    </div>
+    <div className="hemo-chart">
+      <Line
+  data={hemoData}
+  options={{
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { mode: 'index', intersect: false },
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: {
+          color: '#333',
+          font: {
+            size: 8,
+            weight: '500',
+          },
+          autoSkip: false,
+          maxRotation: 0,
+          minRotation: 0,
+        },
+      },
+      y: {
+        grid: {
+          color: '#eee',
+          drawBorder: false,
+          drawTicks: false,
+        },
+        ticks: {
+          color: '#999',
+          font: { size: 8 },
+          stepSize: 1,
+        },
+        suggestedMin: 11,
+        suggestedMax: 15,
+      },
+    },
+  }}
+/>
+
+    </div>
+  </div>
+)}
+
+
           </div>
    
 

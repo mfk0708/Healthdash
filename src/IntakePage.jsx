@@ -34,7 +34,10 @@ const [appointmentDates, setAppointmentDates] = useState(['', '', '']);
 const [doctor, setDoctor] = useState({ name: '', image: '' });
 const [uploadedFiles, setUploadedFiles] = useState({});
 const [uploadSuccess, setUploadSuccess] = useState({});
-
+  const [doctorId] = useState('doc1');
+const [doctorName, setDoctorName] = useState("");
+const [doctorImage, setDoctorImage] = useState("");
+const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
 const [fullProfile, setFullProfile] = useState(null);
  const [comment, setComment] = useState('');
 const intakeRef = useRef();
@@ -55,7 +58,7 @@ useEffect(() => {
  useEffect(() => {
     // Fetch full profile data
     if (patient?.patient_id) {
-      fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/profile/${patient.patient_id}`)
+      fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/profile/${patient.patient_id}`)
         .then(res => res.json())
         .then(data => {
           if (Array.isArray(data) && data.length > 0) {
@@ -90,19 +93,6 @@ useEffect(() => {
     setMedicines(updated);
   };
 
- useEffect(() => {
-    fetch('/chartData.json')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.doctor) {
-          setDoctor(data.doctor);
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching doctor data:', error);
-      });
-  }, []);
-
  
 const handleCommentSubmit = async () => {
   if (!comment.trim()) {
@@ -111,12 +101,13 @@ const handleCommentSubmit = async () => {
   }
 
   try {
-    const response = await fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/comment`, {
+    const response = await fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/comment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         patient_id: patient?.patient_id || null,
-        comment: comment
+        symptoms: "",
+        doctor_comment:comment,
       })
     });
 
@@ -173,7 +164,7 @@ const handlePrescriptionSave = async () => {
       };
 
       const response = await fetch(
-        `https://butter-orientation-conceptual-treatment.trycloudflare.com/prescription`,
+        `https://senator-rich-moreover-hurricane.trycloudflare.com/prescription`,
         {
           method: "POST",
           headers: {
@@ -199,6 +190,7 @@ const handlePrescriptionSave = async () => {
   }
 };
 
+
 const handlePathologySave = async () => {
   const patientId = patient?.patient_id || null;
 
@@ -211,26 +203,26 @@ const handlePathologySave = async () => {
 
   try {
     for (const testName of validTests) {
-      const testResult = testResults[testName];
+      const result = testResults[testName];
+      const file = uploadedFiles[testName]; // 👈 get the uploaded file
 
-      const testPayload = {
-        pat_id: patientId,  // ✅ FIXED: Changed key from patient_id → pat_id
-        test_name: testName,
-        result: testResult,
-      };
+      const formData = new FormData();
+      formData.append("pat_id", patientId);
+      formData.append("test_name", testName);
+      formData.append("result", result);
+      if (file) {
+        formData.append("file", file); // 👈 attach file
+      }
 
-      const response = await fetch("https://butter-orientation-conceptual-treatment.trycloudflare.com/pathology/", {
+      const response = await fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/pathology/`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(testPayload),
+        body: formData, // 👈 no need for headers here
       });
 
       const resultText = await response.text();
 
       if (!response.ok) {
-        console.error("Failed to save:", testPayload);
+        console.error("Failed to save:", testName);
         alert("Failed to save pathology:\n" + resultText);
         return;
       }
@@ -242,8 +234,22 @@ const handlePathologySave = async () => {
     alert("Error saving pathology data.");
   }
 };
+  useEffect(() => {
+    if (!doctorId) return;
 
+    fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/doctor`)
+      .then((res) => res.json())
+      .then((doctors) => {
+        if (!Array.isArray(doctors)) return;
 
+        const selectedDoctor = doctors.find((doc) => doc.doctor_id === doctorId);
+        if (!selectedDoctor) return;
+
+        setDoctorName(selectedDoctor.name || '');
+        setDoctorImage(`https://drive.google.com/uc?export=view&id=${selectedDoctor.image_file_id}`);
+      })
+      .catch((err) => console.error("Failed to fetch doctor data:", err));
+  }, [doctorId]);
 
 
 
@@ -258,13 +264,18 @@ const handlePathologySave = async () => {
   <div className="notification-bell">
                     <FontAwesomeIcon icon={faBell} style={{ color: "#2563EB", fontSize: "30px" }} />
                   </div> <div className="profile-box">
-      <img
-        src={doctor.image}
-        className="drprofile-avatar"
-        alt="Profile"
-      />
+                   <img
+  src={doctorImage || "./images/doctor.png"}
+  className="drprofile-avatar"
+  alt="Profile"
+  onError={(e) => {
+    e.target.onerror = null; // Prevents infinite loop in case default also fails
+    e.target.src = "./images/doctor.png";
+  }}
+/>
+    
       <div className="profile-info">
-        <div className="profile-name">{doctor.name}</div>
+        <div className="profile-name">{doctorName}</div>
         <FontAwesomeIcon icon={faAngleDown} className="vectorlogo" />
       </div>
     </div></div>
@@ -334,7 +345,7 @@ const handlePathologySave = async () => {
   <div className="intake-content-scrollable" ref={intakeRef}>
   <div className="intake-inner-content">
     {/* Put everything else inside here - tabs, intake info, etc */}
- <BetaVersion />
+ <BetaVersion   patient={patient}/>
 
 
               {/* Prescription Section */}

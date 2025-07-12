@@ -7,6 +7,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfileBox from './ProfileBox.jsx';
 
+
 const Patient = () => {
   const [patients, setPatients] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,9 +15,12 @@ const Patient = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [filterType, setFilterType] = useState('date');
   const [selectedPatient, setSelectedPatient] = useState(null);
+const [doctorName, setDoctorName] = useState("");
+const [doctorImage, setDoctorImage] = useState("");
+const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
 
   useEffect(() => {
-    fetch('https://butter-orientation-conceptual-treatment.trycloudflare.com/dashboard')
+    fetch(`https://july-visual-compaq-sticky.trycloudflare.com/dashboard`)
       .then((response) => response.json())
       .then((data) => setPatients(data))
       .catch((error) => console.error('Error fetching patients:', error));
@@ -24,7 +28,7 @@ const Patient = () => {
 
   const fetchPatientById = async (patientId) => {
     try {
-      const response = await fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/profile/${patientId}`);
+      const response = await fetch(`https://july-visual-compaq-sticky.trycloudflare.com/profile/${patientId}`);
       if (!response.ok) throw new Error('Failed to fetch patient');
       const data = await response.json();
       if (Array.isArray(data) && data.length > 0) {
@@ -43,6 +47,20 @@ const Patient = () => {
     }
     return 0;
   });
+useEffect(() => {
+  fetch(`https://july-visual-compaq-sticky.trycloudflare.com/doctor`)
+    .then((res) => res.json())
+    .then((doctors) => {
+      if (!Array.isArray(doctors)) return;
+
+      const selectedDoctor = doctors.find((doc) => doc.doctor_id === selectedDoctorId);
+      if (!selectedDoctor) return;
+
+      setDoctorName(selectedDoctor.name || "");
+      setDoctorImage(`https://drive.google.com/uc?export=view&id=${selectedDoctor.image_file_id}`);
+    })
+    .catch((err) => console.error("Failed to fetch doctor data:", err));
+}, [selectedDoctorId]);
 
   const formatDate = (dateObj) => {
     const year = dateObj.getFullYear();
@@ -86,9 +104,18 @@ const Patient = () => {
           />
         </div>
         <div className="profile-box1">
-          <img src="images/doctor.png" className="profile-avatar-patient" alt="Profile" />
+                 <img
+  src={doctorImage || "./images/doctor.png"}
+  className="profile-avatar-patient"
+  alt="Profile"
+  onError={(e) => {
+    e.target.onerror = null; // Prevents infinite loop in case default also fails
+    e.target.src = "./images/doctor.png";
+  }}
+/>
+          
           <div className="profile-info">
-            <div className="profile-name">Dr. Sarah</div>
+            <div className="profile-name">{doctorName}</div>
             <FontAwesomeIcon icon={faAngleDown} className="vectorlogo" />
           </div>
         </div>

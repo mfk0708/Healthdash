@@ -60,38 +60,69 @@ const [pieData, setPieData] = useState([]);
 const [barData, setBarData] = useState([]);
 const [doctorName, setDoctorName] = useState("");
 const [doctorImage, setDoctorImage] = useState("");
+const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
+
 
 const pieColors = ["#EF4444","#FFD43B"]; // ✅ Green and Yellow
 
 
 const barColors = ["#2563EB", "#FFD43B", "#22C55E", "#9CA3AF", "#EF4444"];
 // Blue, Yellow, Green, Gray, Red
+
 useEffect(() => {
-  fetch("/chartData.json")
+  fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/doctor`)
     .then((res) => res.json())
-    .then((data) => {
-      // Pie & Bar Chart
-      const percentage = data.pie.completedPercentage || 0;
+    .then((doctors) => {
+      if (!Array.isArray(doctors)) return;
+
+      const selectedDoctor = doctors.find((doc) => doc.doctor_id === selectedDoctorId);
+      if (!selectedDoctor) return;
+
+      setDoctorName(selectedDoctor.name || "");
+      setDoctorImage(`https://drive.google.com/uc?export=view&id=${selectedDoctor.image_file_id}`);
+
+      const percentage = selectedDoctor.pie?.completedPercentage || 0;
       setCompletedPercentage(percentage);
       setPieData([
         { name: "Completed", value: percentage },
-        { name: "Pending", value: 100 - percentage }
+        { name: "Pending", value: 100 - percentage },
       ]);
-      setBarData(data.bar || []);
 
-      // Doctor Info
-      const doctor = data.doctor || {};
-      setDoctorName(doctor.name || "");
-  
-      setDoctorImage(doctor.image || "images/doctor.png");
+      setBarData(selectedDoctor.bar || []);
     })
-    .catch((err) => console.error("Failed to fetch chart data:", err));
-}, []);
+    .catch((err) => console.error("Failed to fetch doctor data:", err));
+}, [selectedDoctorId]);
+const handleDeleteAppointment = async (appointment_id) => {
+  // Optimistically remove the appointment from UI immediately
+  setAppointmentsData((prevData) =>
+    prevData.filter((item) => item.appointment_id !== appointment_id)
+  );
 
+  try {
+    const response = await fetch(
+      `https://senator-rich-moreover-hurricane.trycloudflare.com/appointments/${appointment_id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to delete appointment from server");
+    }
+
+    // Optionally: success toast or console log
+    console.log("Appointment deleted successfully.");
+  } catch (error) {
+    console.error("Error deleting appointment:", error);
+    alert("Failed to delete appointment. Please refresh the page.");
+
+    
+  }
+};
 
  
   useEffect(() => {
-    fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/dashboard`)
+    fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/dashboard`)
       .then((res) => res.json())
       .then((data) => {
         const withStatus = data.map((item) => ({
@@ -153,35 +184,64 @@ useEffect(() => {
       </span>
     );
   };
+const saveEditedData = async (appointment_id) => {
+  const appointment = appointmentsData.find(
+    (appt) => appt.appointment_id === appointment_id
+  );
+  const patient_id = appointment?.patient_id;
 
-const saveEditedData = async (patient_id) => {
-  const updatedPatient = { ...editedData };
-
-  try {
-    const response = await fetch(`https://butter-orientation-conceptual-treatment.trycloudflare.com/patient/${patient_id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedPatient),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to update patient");
-    }
-
-    const updatedFromServer = await response.json();
-
-    setAppointmentsData((prev) =>
-      prev.map((appt) =>
-        appt.patient_id === patient_id ? { ...appt, ...updatedFromServer } : appt
-      )
-    );
-  } catch (error) {
-    console.error("Error updating patient:", error);
+  if (!patient_id) {
+    alert("❌ Failed to update appointment.");
+    return;
   }
 
-  setEditingId(null); // Exit edit mode
+  const updatedData = { ...editedData };
+
+  if (!("status" in updatedData)) updatedData.status = appointment.status;
+  if (!("gender" in updatedData)) updatedData.gender = appointment.gender;
+  if (!("blood_group" in updatedData)) updatedData.blood_group = appointment.blood_group;
+
+  // Optimistically update UI
+  setAppointmentsData((prevData) =>
+    prevData.map((appt) =>
+      appt.appointment_id === appointment_id
+        ? { ...appt, ...updatedData }
+        : appt
+    )
+  );
+
+  setEditingId(null);
+  setEditedData({});
+
+  try {
+    const response = await fetch(
+      `https://senator-rich-moreover-hurricane.trycloudflare.com/dashboard/${appointment_id}/${patient_id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed");
+
+    const result = await response.json();
+
+    // Confirm update with server response
+    setAppointmentsData((prev) =>
+      prev.map((appt) =>
+        appt.appointment_id === appointment_id
+          ? { ...appt, ...result }
+          : appt
+      )
+    );
+
+    alert("✅ Appointment updated successfully.");
+  } catch (err) {
+    alert("❌ Failed to update appointment.");
+  }
 };
 
 
@@ -190,7 +250,7 @@ const saveEditedData = async (patient_id) => {
     base.setHours(0, 0, 0, 0);
 
     let targetDate = null;
-    if (option === "today") targetDate = new Date(base);
+    if (option === "today ") targetDate = new Date(base);
     else if (option === "tomorrow") targetDate = new Date(base.setDate(base.getDate() + 1));
     else if (option === "yesterday") targetDate = new Date(base.setDate(base.getDate() - 1));
 
@@ -201,18 +261,51 @@ const saveEditedData = async (patient_id) => {
     setSearch("");
   };
 
-  const handleDeleteAppointment = (patient_id) => {
-    setAppointmentsData((prevData) => prevData.filter((item) => item.patient_id !== patient_id));
-  };
 
-  const toggleStatusWithDelay = (itemName, currentStatus) => {
-    const newStatus = currentStatus === "incomplete" ? "Completed" : "incomplete";
+const toggleStatusWithDelay = async (appointment_id, currentStatus) => {
+  const newStatus = currentStatus === "incomplete" ? "Completed" : "incomplete";
+
+  const appointment = appointmentsData.find(
+    (appt) => appt.appointment_id === appointment_id
+  );
+  if (!appointment) return;
+
+  const updatedAppointment = { ...appointment, status: newStatus };
+
+  setAppointmentsData((prevData) =>
+    prevData.map((appt) =>
+      appt.appointment_id === appointment_id ? updatedAppointment : appt
+    )
+  );
+
+  try {
+    const response = await fetch(
+      `https://senator-rich-moreover-hurricane.trycloudflare.com/appointment/${appointment_id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to update status");
+
+    const updatedFromServer = await response.json();
+
     setAppointmentsData((prevData) =>
       prevData.map((appt) =>
-        appt.name === itemName ? { ...appt, status: newStatus } : appt
+        appt.appointment_id === appointment_id
+          ? { ...appt, ...updatedFromServer }
+          : appt
       )
     );
-  };
+  } catch (error) {
+    console.error("Error updating status:", error);
+  }
+};
+
 
 const handleRowClick = (e, itemId) => {
   const isInsideButton = e.target.closest(".intake-btn, .status-text, .edit-input, .icon");
@@ -255,7 +348,16 @@ const handleRowClick = (e, itemId) => {
                   <FontAwesomeIcon icon={faBell} style={{ color: "#2563EB", fontSize: "30px" }} />
                 </div>
      <div className="profile-box">
-           <img src={doctorImage} className="drprofile-avatar" alt="Profile" />
+          <img
+  src={doctorImage || "./images/doctor.png"}
+  className="drprofile-avatar"
+  alt="Profile"
+  onError={(e) => {
+    e.target.onerror = null; // Prevents infinite loop in case default also fails
+    e.target.src = "./images/doctor.png";
+  }}
+/>
+
             <div className="profile-info">
             <div className="profile-name">{doctorName}</div>
               
@@ -274,7 +376,16 @@ const handleRowClick = (e, itemId) => {
           Here is your dashboard to manage consultations with ease.
         </div>
       </div>
-     <img src={doctorImage} alt="Doctor" className="greeting-img" />
+    <img
+  src={doctorImage || "/images/doctor.png"}
+  alt="Doctor"
+  className="greeting-img"
+  onError={(e) => {
+    e.target.onerror = null;
+    e.target.src = "/images/doctor.png";
+  }}
+/>
+
     </div>
 
     {/* Pie Chart Card */}
@@ -284,14 +395,14 @@ const handleRowClick = (e, itemId) => {
  
   <div className="chart-wrapper">
    <div className="chart-wrapper1">
-  <ResponsiveContainer width={160} height={160}>
+  <ResponsiveContainer width={140} height={140}>
   <PieChart>
     <Pie
       data={pieData}
       cx="50%"
       cy="50%"
-      innerRadius={50}
-      outerRadius={70}
+      innerRadius={40}
+      outerRadius={60}
       dataKey="value"
       startAngle={90}
       endAngle={-270}
@@ -320,7 +431,7 @@ const handleRowClick = (e, itemId) => {
   
   
   <div className="chart-wrapper">
-    <ResponsiveContainer width={200} height={160}>
+    <ResponsiveContainer width={180} height={130}>
   <BarChart data={barData}>
     <XAxis dataKey="day" hide={true} />
     <YAxis hide={true} />
@@ -334,7 +445,7 @@ const handleRowClick = (e, itemId) => {
 </ResponsiveContainer>
 
   </div>
-  <div className="chart-title">Weekly hours completed</div>
+  <div className="chart-title1">Weekly hours completed</div>
 </div>
 
 </div>
@@ -426,10 +537,11 @@ const handleRowClick = (e, itemId) => {
 
     {showDateDropdown && (
       <div className="dropdown-menu">
-        <div onClick={() => handleQuickDate("all")}>All</div>
-        <div onClick={() => handleQuickDate("today")}>Today</div>
-        <div onClick={() => handleQuickDate("tomorrow")}>Tomorrow</div>
-        <div onClick={() => handleQuickDate("yesterday")}>Yesterday</div>
+       
+        <div onClick={() => handleQuickDate("today")}>Today's Appointments</div>
+        <div onClick={() => handleQuickDate("tomorrow")}>Tomorrow's Appointments</div>
+        <div onClick={() => handleQuickDate("yesterday")}>Yesterday's Appointments</div>
+         <div onClick={() => handleQuickDate("all")}> See All</div>
       </div>
     )}
   </div>
@@ -470,20 +582,20 @@ const handleRowClick = (e, itemId) => {
 </div>
 
 <div className="appointments-card-scroll">
-      {paginatedAppointments.map((item) => (
+   {paginatedAppointments.map((item) => (
   <div
-    key={item.patient_id}
-    className={`appointment-row ${activeKey === item.patient_id ? "active" : ""}`}
+    key={item.appointment_id}
+    className={`appointment-row ${activeKey === item.appointment_id ? "active" : ""}`}
     onClick={(e) => handleRowClick(e, item.patient_id)}
   >
     {/* Patient Name */}
     <div className="cell patient">
-      {editingId === item.patient_id ? (
+      {editingId === item.appointment_id ? (
         <input
           value={editedData.patient_name || ""}
           onChange={(e) => handleInputChange("patient_name", e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
-          onBlur={() => saveEditedData(item.patient_id)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.appointment_id)}
+          onBlur={() => saveEditedData(item.appointment_id)}
           className="edit-input"
         />
       ) : (
@@ -500,13 +612,13 @@ const handleRowClick = (e, itemId) => {
 
     {/* Age */}
     <div className="cell age">
-      {editingId === item.patient_id ? (
+      {editingId === item.appointment_id ? (
         <input
           type="number"
           value={editedData.patient_age || ""}
           onChange={(e) => handleInputChange("patient_age", e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
-          onBlur={() => saveEditedData(item.patient_id)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.appointment_id)}
+          onBlur={() => saveEditedData(item.appointment_id)}
           className="edit-input"
         />
       ) : (
@@ -516,13 +628,13 @@ const handleRowClick = (e, itemId) => {
 
     {/* Date */}
     <div className="cell date">
-      {editingId === item.patient_id ? (
+      {editingId === item.appointment_id ? (
         <input
           type="date"
           value={editedData.date || ""}
           onChange={(e) => handleInputChange("date", e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
-          onBlur={() => saveEditedData(item.patient_id)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.appointment_id)}
+          onBlur={() => saveEditedData(item.appointment_id)}
           className="edit-input"
         />
       ) : (
@@ -532,13 +644,13 @@ const handleRowClick = (e, itemId) => {
 
     {/* Time */}
     <div className="cell time">
-      {editingId === item.patient_id ? (
+      {editingId === item.appointment_id ? (
         <input
           type="time"
           value={editedData.time || ""}
           onChange={(e) => handleInputChange("time", e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
-          onBlur={() => saveEditedData(item.patient_id)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.appointment_id)}
+          onBlur={() => saveEditedData(item.appointment_id)}
           className="edit-input"
         />
       ) : (
@@ -548,12 +660,12 @@ const handleRowClick = (e, itemId) => {
 
     {/* Reason (Disease) */}
     <div className="cell reason">
-      {editingId === item.patient_id ? (
+      {editingId === item.appointment_id ? (
         <input
           value={editedData.disease || ""}
           onChange={(e) => handleInputChange("disease", e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
-          onBlur={() => saveEditedData(item.patient_id)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.appointment_id)}
+          onBlur={() => saveEditedData(item.appointment_id)}
           className="edit-input"
         />
       ) : (
@@ -563,12 +675,12 @@ const handleRowClick = (e, itemId) => {
 
     {/* Doctor */}
     <div className="cell doctor">
-      {editingId === item.patient_id ? (
+      {editingId === item.appointment_id ? (
         <input
           value={editedData.doctor_name || ""}
           onChange={(e) => handleInputChange("doctor_name", e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.patient_id)}
-          onBlur={() => saveEditedData(item.patient_id)}
+          onKeyDown={(e) => e.key === "Enter" && saveEditedData(item.appointment_id)}
+          onBlur={() => saveEditedData(item.appointment_id)}
           className="edit-input"
         />
       ) : (
@@ -581,7 +693,7 @@ const handleRowClick = (e, itemId) => {
       className="cell status status-text"
       onClick={(e) => {
         e.stopPropagation();
-        toggleStatusWithDelay(item.patient_name, item.status);
+        toggleStatusWithDelay(item.appointment_id, item.status);
       }}
       style={{
         cursor: "pointer",
@@ -614,7 +726,7 @@ const handleRowClick = (e, itemId) => {
         className="icon edit-icon"
         onClick={(e) => {
           e.stopPropagation();
-          setEditingId(item.patient_id);
+          setEditingId(item.appointment_id);
           setEditedData({
             patient_name: item.patient_name,
             patient_age: item.patient_age,
@@ -631,13 +743,14 @@ const handleRowClick = (e, itemId) => {
         className="icon delete-icon"
         onClick={(e) => {
           e.stopPropagation();
-          handleDeleteAppointment(item.patient_id);
+          handleDeleteAppointment(item.appointment_id);
         }}
       />
       <FontAwesomeIcon icon={faAngleDown} title="Done" className="icon done-icon" />
     </div>
   </div>
 ))}
+ 
  </div>
       </div>
 
