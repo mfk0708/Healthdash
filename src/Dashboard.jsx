@@ -1,4 +1,3 @@
-// Keep all your imports as-is (unchanged)
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
 import { Button } from "@/components/ui/button";
@@ -61,7 +60,8 @@ const [barData, setBarData] = useState([]);
 const [doctorName, setDoctorName] = useState("");
 const [doctorImage, setDoctorImage] = useState("");
 const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
-
+ 
+const API='https://healthapi-zol8.onrender.com'
 
 const pieColors = ["#EF4444","#FFD43B"]; // ✅ Green and Yellow
 
@@ -70,7 +70,7 @@ const barColors = ["#2563EB", "#FFD43B", "#22C55E", "#9CA3AF", "#EF4444"];
 // Blue, Yellow, Green, Gray, Red
 
 useEffect(() => {
-  fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/doctor`)
+  fetch(`${API}/doctor`)
     .then((res) => res.json())
     .then((doctors) => {
       if (!Array.isArray(doctors)) return;
@@ -93,14 +93,13 @@ useEffect(() => {
     .catch((err) => console.error("Failed to fetch doctor data:", err));
 }, [selectedDoctorId]);
 const handleDeleteAppointment = async (appointment_id) => {
-  // Optimistically remove the appointment from UI immediately
   setAppointmentsData((prevData) =>
     prevData.filter((item) => item.appointment_id !== appointment_id)
   );
 
   try {
     const response = await fetch(
-      `https://senator-rich-moreover-hurricane.trycloudflare.com/appointments/${appointment_id}`,
+      `${API}/appointments/${appointment_id}`,
       {
         method: "DELETE",
       }
@@ -120,16 +119,11 @@ const handleDeleteAppointment = async (appointment_id) => {
   }
 };
 
- 
   useEffect(() => {
-    fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/dashboard`)
+    fetch(`${API}/dashboard`)
       .then((res) => res.json())
-      .then((data) => {
-        const withStatus = data.map((item) => ({
-          ...item,
-          status: "incomplete",
-        }));
-        setAppointmentsData(withStatus);
+      .then((data) =>{ 
+        setAppointmentsData(data);
       })
       .catch((error) => console.error("Failed to fetch appointments:", error));
   }, []);
@@ -148,9 +142,9 @@ const handleDeleteAppointment = async (appointment_id) => {
 
       if (field === "status") {
         const getOrderValue = (status) => {
-          if (status?.toLowerCase() === "completed") return 1;
-          if (status?.toLowerCase() === "incomplete") return 2;
-          return 3;
+          if (status?.toLowerCase() === "Completed") return 1;
+          if (status?.toLowerCase() === "Scheduled") return 2;
+          return 3
         };
         valA = getOrderValue(a.status);
         valB = getOrderValue(b.status);
@@ -214,36 +208,32 @@ const saveEditedData = async (appointment_id) => {
   setEditedData({});
 
   try {
-    const response = await fetch(
-      `https://senator-rich-moreover-hurricane.trycloudflare.com/dashboard/${appointment_id}/${patient_id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData),
-      }
-    );
+  const response = await fetch(
+    `${API}/dashboard/${appointment_id}/${patient_id}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedData),
+    }
+  );
 
-    if (!response.ok) throw new Error("Failed");
+  if (!response.ok) throw new Error("Failed to update appointment");
 
-    const result = await response.json();
+  // Discard the single-object response (optional, if you don't need it)
+  await response.json();
 
-    // Confirm update with server response
-    setAppointmentsData((prev) =>
-      prev.map((appt) =>
-        appt.appointment_id === appointment_id
-          ? { ...appt, ...result }
-          : appt
-      )
-    );
+  // ✅ Now refetch the full dashboard data to ensure freshness
+  const dashRes = await fetch(`${API}/dashboard`);
+  if (!dashRes.ok) throw new Error("Failed to fetch dashboard");
 
-    alert("✅ Appointment updated successfully.");
-  } catch (err) {
-    alert("❌ Failed to update appointment.");
-  }
-};
+  const dashData = await dashRes.json();
+  setAppointmentsData(dashData);
 
+} catch (err) {
+  console.error("Update error:", err);
+  alert("❌ Failed to update appointment.");
+}
+}
 
   const handleQuickDate = (option) => {
     const base = new Date();
@@ -263,7 +253,7 @@ const saveEditedData = async (appointment_id) => {
 
 
 const toggleStatusWithDelay = async (appointment_id, currentStatus) => {
-  const newStatus = currentStatus === "incomplete" ? "Completed" : "incomplete";
+  const newStatus = currentStatus === "Scheduled" ? "Completed" : "Scheduled";
 
   const appointment = appointmentsData.find(
     (appt) => appt.appointment_id === appointment_id
@@ -280,9 +270,9 @@ const toggleStatusWithDelay = async (appointment_id, currentStatus) => {
 
   try {
     const response = await fetch(
-      `https://senator-rich-moreover-hurricane.trycloudflare.com/appointment/${appointment_id}`,
+      `${API}/appointments/${appointment_id}`,
       {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -476,7 +466,7 @@ const handleRowClick = (e, itemId) => {
         <div className="calendar-container">
           <Popover>
             <PopoverTrigger asChild>
-              <Button className="calendar-input w-[180px] justify-start text-left font-normal text-sm bg-white border border-gray-300 rounded-lg py-2 px-3">
+          <Button className="calendar-input w-[180px] justify-start text-left text-sm font-normal bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500">
                 <CalendarIcon className="calender-icon" />
                 {selectedDate instanceof Date ? (
                   format(selectedDate, "PPP")
@@ -697,7 +687,7 @@ const handleRowClick = (e, itemId) => {
       }}
       style={{
         cursor: "pointer",
-        color: item.status === "Completed" ? "black" : "red",
+        color: item.status === "Completed" ? "black" : "green",
         fontWeight: 500,
       }}
     >

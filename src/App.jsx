@@ -8,7 +8,6 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Sidebar acts as the Layout */}
         <Route path="/" element={<Sidebar />}>
           <Route index element={<Dashboard />} />
           <Route path="patients" element={<Patient />} />

@@ -16,6 +16,9 @@ import {
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
+
+const API ='https://healthapi-zol8.onrender.com'
+
 const ProfileBox = ({ patient, onClose }) => {
   const [activeTab, setActiveTab] = useState('doctor');
   const [hemoData, setHemoData] = useState(null);
@@ -54,7 +57,7 @@ const ProfileBox = ({ patient, onClose }) => {
 useEffect(() => {
   if (!patient?.patient_id) return;
 
-  fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/profile/${patient.patient_id}`)
+  fetch(`${API}/profile/${patient.patient_id}`)
     .then((res) => res.json())
     .then((data) => {
       console.log("Fetched profile from backend:", data); // 👈 Add this
@@ -88,25 +91,25 @@ useEffect(() => {
   useEffect(() => {
     if (patient?.patient_id) {
       // Fetch full profile
-      fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/profile/${patient.patient_id}`)
+      fetch(`${API}/profile/${patient.patient_id}`)
         .then(res => res.json())
         .then(data => setFullProfile(data[0])) // response is an array
         .catch(err => console.error("Error fetching patient profile:", err));
 
       // Pathology
-      fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/pathology/${patient.patient_id}`)
+      fetch(`${API}/pathology/${patient.patient_id}`)
         .then((res) => res.json())
         .then((data) => setPathology(data))
         .catch((error) => console.error('Error fetching pathology data:', error));
 
       // Doctor Checkup
-      fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/checkup/${patient.patient_id}`)
+      fetch(`${API}/checkup/${patient.patient_id}`)
         .then((res) => res.json())
         .then((data) => setVisitHistory(data || []))
         .catch((error) => console.error('Error fetching visit history:', error));
 
       // Prescription
-      fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/prescription/${patient.patient_id}`)
+      fetch(`${API}/prescription/${patient.patient_id}`)
         .then((res) => res.json())
         .then((data) => setPrescriptions(data?.prescriptions || []))
         .catch((error) => console.error('Error fetching prescriptions:', error));

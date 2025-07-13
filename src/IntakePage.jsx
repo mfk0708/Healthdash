@@ -41,6 +41,9 @@ const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
 const [fullProfile, setFullProfile] = useState(null);
  const [comment, setComment] = useState('');
 const intakeRef = useRef();
+
+const API='https://healthapi-zol8.onrender.com'
+
 useEffect(() => {
   const handleClickOutsideIntake = (event) => {
     if (intakeRef.current && !intakeRef.current.contains(event.target)) {
@@ -58,7 +61,7 @@ useEffect(() => {
  useEffect(() => {
     // Fetch full profile data
     if (patient?.patient_id) {
-      fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/profile/${patient.patient_id}`)
+      fetch(`${API}/profile/${patient.patient_id}`)
         .then(res => res.json())
         .then(data => {
           if (Array.isArray(data) && data.length > 0) {
@@ -101,7 +104,7 @@ const handleCommentSubmit = async () => {
   }
 
   try {
-    const response = await fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/comment`, {
+    const response = await fetch(`${API}/comment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -164,7 +167,7 @@ const handlePrescriptionSave = async () => {
       };
 
       const response = await fetch(
-        `https://senator-rich-moreover-hurricane.trycloudflare.com/prescription`,
+        `${API}prescription`,
         {
           method: "POST",
           headers: {
@@ -214,9 +217,9 @@ const handlePathologySave = async () => {
         formData.append("file", file); // 👈 attach file
       }
 
-      const response = await fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/pathology/`, {
+      const response = await fetch(`${API}/pathology`, {
         method: "POST",
-        body: formData, // 👈 no need for headers here
+        body: formData,
       });
 
       const resultText = await response.text();
@@ -237,7 +240,7 @@ const handlePathologySave = async () => {
   useEffect(() => {
     if (!doctorId) return;
 
-    fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/doctor`)
+    fetch(`${API}/doctor`)
       .then((res) => res.json())
       .then((doctors) => {
         if (!Array.isArray(doctors)) return;

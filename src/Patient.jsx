@@ -7,6 +7,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfileBox from './ProfileBox.jsx';
 
+const API ='https://healthapi-zol8.onrender.com'
 
 const Patient = () => {
   const [patients, setPatients] = useState([]);
@@ -20,7 +21,7 @@ const [doctorImage, setDoctorImage] = useState("");
 const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
 
   useEffect(() => {
-    fetch(`https://july-visual-compaq-sticky.trycloudflare.com/dashboard`)
+    fetch(`${API}/dashboard`)
       .then((response) => response.json())
       .then((data) => setPatients(data))
       .catch((error) => console.error('Error fetching patients:', error));
@@ -28,7 +29,7 @@ const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
 
   const fetchPatientById = async (patientId) => {
     try {
-      const response = await fetch(`https://july-visual-compaq-sticky.trycloudflare.com/profile/${patientId}`);
+      const response = await fetch(` ${API}/profile/${patientId}`);
       if (!response.ok) throw new Error('Failed to fetch patient');
       const data = await response.json();
       if (Array.isArray(data) && data.length > 0) {
@@ -48,7 +49,7 @@ const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
     return 0;
   });
 useEffect(() => {
-  fetch(`https://july-visual-compaq-sticky.trycloudflare.com/doctor`)
+  fetch(`${API}/doctor`)
     .then((res) => res.json())
     .then((doctors) => {
       if (!Array.isArray(doctors)) return;
