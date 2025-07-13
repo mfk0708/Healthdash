@@ -18,6 +18,7 @@ ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, T
 
 
 const API ='https://healthapi-zol8.onrender.com'
+const apiKey = import.meta.env.VITE_API_KEY;
 
 const ProfileBox = ({ patient, onClose }) => {
   const [activeTab, setActiveTab] = useState('doctor');
@@ -57,7 +58,11 @@ const ProfileBox = ({ patient, onClose }) => {
 useEffect(() => {
   if (!patient?.patient_id) return;
 
-  fetch(`${API}/profile/${patient.patient_id}`)
+  fetch(`${API}/profile/${patient.patient_id}`,
+    {
+      headers:{"x-api-key":apiKey}
+    }
+  )
     .then((res) => res.json())
     .then((data) => {
       console.log("Fetched profile from backend:", data); // 👈 Add this
@@ -91,25 +96,41 @@ useEffect(() => {
   useEffect(() => {
     if (patient?.patient_id) {
       // Fetch full profile
-      fetch(`${API}/profile/${patient.patient_id}`)
+      fetch(`${API}/profile/${patient.patient_id}`,
+        {
+          headers:{"x-api-key":apiKey}
+        }
+      )
         .then(res => res.json())
         .then(data => setFullProfile(data[0])) // response is an array
         .catch(err => console.error("Error fetching patient profile:", err));
 
       // Pathology
-      fetch(`${API}/pathology/${patient.patient_id}`)
+      fetch(`${API}/pathology/${patient.patient_id}`,
+        {
+          headers:{"x-api-key":apiKey}
+        }
+      )
         .then((res) => res.json())
         .then((data) => setPathology(data))
         .catch((error) => console.error('Error fetching pathology data:', error));
 
       // Doctor Checkup
-      fetch(`${API}/checkup/${patient.patient_id}`)
+      fetch(`${API}/checkup/${patient.patient_id}`,
+        {
+          headers:{"x-api-key":apiKey}
+        }
+      )
         .then((res) => res.json())
         .then((data) => setVisitHistory(data || []))
         .catch((error) => console.error('Error fetching visit history:', error));
 
       // Prescription
-      fetch(`${API}/prescription/${patient.patient_id}`)
+      fetch(`${API}/prescription/${patient.patient_id}`,
+        {
+          headers:{"x-api-key":apiKey}
+        }
+      )
         .then((res) => res.json())
         .then((data) => setPrescriptions(data?.prescriptions || []))
         .catch((error) => console.error('Error fetching prescriptions:', error));

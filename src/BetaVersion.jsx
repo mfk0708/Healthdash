@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import './BetaVersion.css';
 
+const API='https://healthapi-zol8.onrender.com'
 const BetaVersion = ({ patient }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
@@ -71,10 +72,11 @@ const handleSaveToServer = async () => {
   console.log("Sending symptoms:", transcribedText);
 
   try {
-    const response = await fetch(`https://senator-rich-moreover-hurricane.trycloudflare.com/comment`, {
+    const response = await fetch(`${API}/comment`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        "x-api-key": "a2c3f9e4-84b0-45c9-927e-9e7c1f5d4a88"
       },
       body: JSON.stringify({
         patient_id: patient?.patient_id || "",   

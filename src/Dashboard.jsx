@@ -62,6 +62,7 @@ const [doctorImage, setDoctorImage] = useState("");
 const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
  
 const API='https://healthapi-zol8.onrender.com'
+const apiKey = import.meta.env.VITE_API_KEY;
 
 const pieColors = ["#EF4444","#FFD43B"]; // ✅ Green and Yellow
 
@@ -102,7 +103,11 @@ const handleDeleteAppointment = async (appointment_id) => {
       `${API}/appointments/${appointment_id}`,
       {
         method: "DELETE",
-      }
+        headers:{
+          'x-api-key':apiKey
+        }
+      },
+      
     );
 
     if (!response.ok) {
@@ -275,6 +280,7 @@ const toggleStatusWithDelay = async (appointment_id, currentStatus) => {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          'x-api-key':apiKey
         },
         body: JSON.stringify({ status: newStatus }),
       }

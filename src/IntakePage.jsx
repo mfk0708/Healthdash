@@ -43,6 +43,7 @@ const [fullProfile, setFullProfile] = useState(null);
 const intakeRef = useRef();
 
 const API='https://healthapi-zol8.onrender.com'
+const apiKey = import.meta.env.VITE_API_KEY;
 
 useEffect(() => {
   const handleClickOutsideIntake = (event) => {
@@ -61,7 +62,13 @@ useEffect(() => {
  useEffect(() => {
     // Fetch full profile data
     if (patient?.patient_id) {
-      fetch(`${API}/profile/${patient.patient_id}`)
+      fetch(`${API}/profile/${patient.patient_id}`,
+        {
+          headers:{
+            "x-api-key":apiKey
+          }
+        }
+      )
         .then(res => res.json())
         .then(data => {
           if (Array.isArray(data) && data.length > 0) {
@@ -106,7 +113,10 @@ const handleCommentSubmit = async () => {
   try {
     const response = await fetch(`${API}/comment`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",       
+         "x-api-key":apiKey
+       },
       body: JSON.stringify({
         patient_id: patient?.patient_id || null,
         symptoms: "",
@@ -172,6 +182,7 @@ const handlePrescriptionSave = async () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+             "x-api-key":apiKey
           },
           body: JSON.stringify(singlePrescription),
         }
@@ -219,6 +230,7 @@ const handlePathologySave = async () => {
 
       const response = await fetch(`${API}/pathology`, {
         method: "POST",
+        headers: {"x-api-key":apiKey},
         body: formData,
       });
 
@@ -240,7 +252,11 @@ const handlePathologySave = async () => {
   useEffect(() => {
     if (!doctorId) return;
 
-    fetch(`${API}/doctor`)
+    fetch(`${API}/doctor`,
+      {
+        headers:{"x-api-key":apiKey}
+      }
+    )
       .then((res) => res.json())
       .then((doctors) => {
         if (!Array.isArray(doctors)) return;

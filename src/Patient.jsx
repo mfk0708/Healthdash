@@ -8,6 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import ProfileBox from './ProfileBox.jsx';
 
 const API ='https://healthapi-zol8.onrender.com'
+const apiKey = import.meta.env.VITE_API_KEY;
 
 const Patient = () => {
   const [patients, setPatients] = useState([]);
@@ -21,7 +22,11 @@ const [doctorImage, setDoctorImage] = useState("");
 const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
 
   useEffect(() => {
-    fetch(`${API}/dashboard`)
+    fetch(`${API}/dashboard`,
+      {
+        headers:{'x-api-key':apiKey}
+      }
+    )
       .then((response) => response.json())
       .then((data) => setPatients(data))
       .catch((error) => console.error('Error fetching patients:', error));
@@ -49,7 +54,11 @@ const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
     return 0;
   });
 useEffect(() => {
-  fetch(`${API}/doctor`)
+  fetch(`${API}/doctor`,
+    {
+      headers:{'x-api-key':apiKey}
+    }
+  )
     .then((res) => res.json())
     .then((doctors) => {
       if (!Array.isArray(doctors)) return;
