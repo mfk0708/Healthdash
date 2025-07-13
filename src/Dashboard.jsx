@@ -71,7 +71,13 @@ const barColors = ["#2563EB", "#FFD43B", "#22C55E", "#9CA3AF", "#EF4444"];
 // Blue, Yellow, Green, Gray, Red
 
 useEffect(() => {
-  fetch(`${API}/doctor`)
+  fetch(`${API}/doctor`,
+    {
+      headers:{
+        "x-api-key":apiKey
+      }
+    }
+  )
     .then((res) => res.json())
     .then((doctors) => {
       if (!Array.isArray(doctors)) return;
@@ -125,7 +131,13 @@ const handleDeleteAppointment = async (appointment_id) => {
 };
 
   useEffect(() => {
-    fetch(`${API}/dashboard`)
+    fetch(`${API}/dashboard`,
+      {
+        headers:{
+          "x-api-key":apiKey
+        }
+      }
+    )
       .then((res) => res.json())
       .then((data) =>{ 
         setAppointmentsData(data);
@@ -217,7 +229,9 @@ const saveEditedData = async (appointment_id) => {
     `${API}/dashboard/${appointment_id}/${patient_id}`,
     {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json",
+        "x-api-key":apiKey
+       },
       body: JSON.stringify(updatedData),
     }
   );
