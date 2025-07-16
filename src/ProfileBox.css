@@ -183,27 +183,6 @@ border-radius: 12px;
   color: #070f1c;
   cursor: pointer;
 }
-@media print {
-  .no-print {
-    display: none !important;
-  }
-
-  body * {
-    visibility: hidden;
-  }
-
-  .print-area, .print-area * {
-    visibility: visible;
-  }
-
-  .print-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-  }
-}
-/* === New Layout for Hospital and Patient Info Cards === */
 
 .top-cards {
   display: flex;
@@ -573,3 +552,21 @@ h3{
     border-bottom: 1px solid #ccc;
   }
 }
+@media print {
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+  }
+
+  .header {
+    background-color: #00b1cc;
+    color: white;
+    /* ... */
+  }
+
+  .footer {
+    background-color: #00b1cc;
+    color: white;
+    /* ... */
+  }

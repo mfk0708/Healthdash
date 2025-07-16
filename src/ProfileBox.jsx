@@ -31,28 +31,184 @@ const ProfileBox = ({ patient, onClose }) => {
   const boxRef = useRef();
   const prescriptionRef = useRef();
 
-  const printPrescription = () => {
-    const content = prescriptionRef.current.innerHTML;
-    const printWindow = window.open('', '', 'height=600,width=800');
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Prescription</title>
-          <style>
-            body { font-family: Arial; padding: 20px; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; }
-          </style>
-        </head>
-        <body>${content}</body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  };
+  
+const printPrescription = () => {
+  const content = prescriptions.map((med) => `
+    <tr>
+      <td>${med.medicine}</td>
+      <td>${med.dosage}</td>
+      <td>${med.duration}</td>
+      <td>${med.frequency}</td>
+      <td>${med.notes || '-'}</td>
+    </tr>
+  `).join('');
+
+  const patientName = fullProfile?.name || '---';
+  const patientAge = fullProfile?.age || '--';
+  const patientGender = fullProfile?.gender || '--';
+  const today = new Date().toLocaleDateString();
+
+  const printWindow = window.open('', '', 'height=1000,width=800');
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Prescription Report</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #fff;
+            color: #000;
+            padding: 0;
+          }
+
+          .header {
+            background-color: #00b1cc;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+          }
+
+          .logo-pentagon {
+            width: 40px;
+            height: 40px;
+            background: #007f9b;
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 20px;
+            color: white;
+            font-family: Arial, sans-serif;
+          }
+
+          .header-text {
+            line-height: 1.2;
+          }
+
+          .header-text h2 {
+            margin: 0;
+            font-size: 22px;
+          }
+
+          .header-text span {
+            font-size: 13px;
+          }
+
+          .title {
+            text-align: center;
+            color: #0072ce;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0 10px;
+            text-transform: uppercase;
+          }
+
+          .info-section {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 30px;
+            font-size: 14px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            margin: 0 30px 20px;
+          }
+
+          .info-section div {
+            width: 48%;
+            line-height: 1.6;
+          }
+
+          .prescription-table {
+            width: 90%;
+            margin: 0 auto 30px;
+            border-collapse: collapse;
+            font-size: 14px;
+          }
+
+          .prescription-table th,
+          .prescription-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+          }
+
+          .prescription-table th {
+            background-color: #f2f2f2;
+          }
+
+          .footer {
+            background-color: #00b1cc;
+            color: white;
+            text-align: center;
+            padding: 15px 0 5px;
+            font-size: 13px;
+            margin-top: 30px;
+          }
+
+          .footer .lab {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 14px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="logo-pentagon">H</div>
+          <div class="header-text">
+            <h2>HMS Medical Hospital</h2>
+            <span>Prescription centre</span>
+          </div>
+        </div>
+
+        <div class="title"></div>
+
+        <div class="info-section">
+          <div>
+            <strong>Pt. Name:</strong> ${patientName}, ${patientAge}/${patientGender}<br>
+            <strong>Ref. By:</strong> Dr. Joseph Rajm, M.D<br>
+            <strong>OP/IP:</strong> OP
+          </div>
+          <div>
+            <strong>Prescription date:</strong> ${today} 8:10 AM<br>
+           
+          </div>
+        </div>
+
+        <div class="title">PRESCRIPTION</div>
+
+        <table class="prescription-table">
+          <thead>
+            <tr>
+              <th>Medicine</th>
+              <th>Dosage</th>
+              <th>Duration</th>
+              <th>Frequency</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${content}
+          </tbody>
+        </table>
+
+        <div class="footer">
+          www.hmsmedico.com | 9876543210
+          <div class="lab">JOHN HARINGTON<br>Medical Incharge</div>
+        </div>
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+};
 
   
 useEffect(() => {
@@ -307,7 +463,19 @@ useEffect(() => {
                         <td>{test.test_name}</td>
                         <td>{test.status}</td>
                         <td>{test.diagnosis}</td>
-                        <td>{test.status === "Completed" ? <button className="pdf-btn">PDF</button> : "Pending"}</td>
+                        <td>
+  {test.status === "Completed" ? (
+    <button
+      className="pdf-btn"
+      onClick={() => window.open(`/images/pathol.png`, '_blank')}
+    >
+      PDF
+    </button>
+  ) : (
+    "Pending"
+  )}
+</td>
+
                         <td><FontAwesomeIcon icon={faAngleDown} title="Done" className="icon done-icon" /></td>
                       </tr>
                     ))
