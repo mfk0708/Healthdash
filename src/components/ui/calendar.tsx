@@ -67,8 +67,8 @@ function Calendar({
           "w-full flex items-center text-sm font-medium justify-center h-(--cell-size) gap-1.5",
           defaultClassNames.dropdowns
         ),
-        dropdown_root: cn(
-          "relative has-focus:border-ring border border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md",
+       dropdown_root: cn("relative focus:border-blue-500 border border-gray-300 shadow-sm focus:ring-blue-200 focus:ring-2 rounded-md",
+          
           defaultClassNames.dropdown_root
         ),
         dropdown: cn("absolute inset-0 opacity-0", defaultClassNames.dropdown),

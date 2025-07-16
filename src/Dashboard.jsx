@@ -238,10 +238,10 @@ const saveEditedData = async (appointment_id) => {
 
   if (!response.ok) throw new Error("Failed to update appointment");
 
-  // Discard the single-object response (optional, if you don't need it)
+
   await response.json();
 
-  // ✅ Now refetch the full dashboard data to ensure freshness
+
   const dashRes = await fetch(`${API}/dashboard`);
   if (!dashRes.ok) throw new Error("Failed to fetch dashboard");
 
@@ -250,7 +250,6 @@ const saveEditedData = async (appointment_id) => {
 
 } catch (err) {
   console.error("Update error:", err);
-  alert("❌ Failed to update appointment.");
 }
 }
 
