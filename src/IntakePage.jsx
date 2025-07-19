@@ -177,7 +177,7 @@ const handlePrescriptionSave = async () => {
       };
 
       const response = await fetch(
-        `${API}prescription`,
+        `${API}/prescription`,
         {
           method: "POST",
           headers: {
