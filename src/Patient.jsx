@@ -32,18 +32,7 @@ const [selectedDoctorId, setSelectedDoctorId] = useState("doc1");
       .catch((error) => console.error('Error fetching patients:', error));
   }, []);
 
-  const fetchPatientById = async (patientId) => {
-    try {
-      const response = await fetch(` ${API}/profile/${patientId}`);
-      if (!response.ok) throw new Error('Failed to fetch patient');
-      const data = await response.json();
-      if (Array.isArray(data) && data.length > 0) {
-        setSelectedPatient(data[0]); // set first object
-      }
-    } catch (error) {
-      console.error('Error fetching patient by ID:', error);
-    }
-  };
+
 
   const sortedPatients = [...patients].sort((a, b) => {
     if (sortBy === 'Alphabetical') {
@@ -210,12 +199,12 @@ useEffect(() => {
               <div className="full-width-divider-wrapper">
                 <hr className="card-divider" />
               </div>
-              <button
-                className="view-btn"
-                onClick={() => fetchPatientById(patient.patient_id)}
-              >
-                View Profile
-              </button>
+           <button
+  className="view-btn"
+  onClick={() => setSelectedPatient({ patient_id: patient.patient_id })}
+>
+  View Profile
+</button>
             </div>
           ))
         ) : (
@@ -223,8 +212,8 @@ useEffect(() => {
         )}
       </div>
 
-      {/* Profile Modal */}
-      {selectedPatient && (
+
+    {selectedPatient && (
         <div className="profile-modal">
           <ProfileBox patient={selectedPatient} onClose={() => setSelectedPatient(null)} />
         </div>

@@ -304,6 +304,7 @@ useEffect(() => {
   }, [onClose]);
 
   return (
+    
     <div className="profile-box-container">
       <div className="profile-box-card" ref={boxRef}>
         <div className="top-cards">
